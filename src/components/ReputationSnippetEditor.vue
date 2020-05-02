@@ -3,9 +3,15 @@
 	<div>
 		Hello
 
+    <!-- Le draggable est synchronisé avec le tableau des catégories
+    via v-model. Si on bouge les composants SnippetCategory. 
+    Les modifications se répercuteront sur le tableau categories qui est 
+    une propriété computed -->
 		<draggable v-model="categories" v-bind="dragOptions">
+      <!-- On boucle sur le tableau d'objets de la propriété 
+      computed categories et on passe chaque objet category au composant
+      SnippetCategory -->
 			<SnippetCategory v-for="category in categories" :category="category" :key="category.id">
-
 			</SnippetCategory>
 		</draggable>
 
@@ -29,22 +35,32 @@
 
 			categories:{
 				get(){
+          /* On récupère le tableau des categories du state depuis le store
+          pour en faire une propriété computed categories */
 					return this.$store.state.categories
 				},
-
-				set(value){
+        /* Si l'ordre des catégories dans le tableau categories 
+        est modifié par le draggable, la propriété computed peut écouter
+        ces changements via le setter set(value) où value est la nouvelle
+        valeur de la propriété */
+				set(value) {
+          console.log('valueCat', value); ///////////////////////////////////////////
+          /* Si categories change on dispatch une action updateCategoryOrder
+          avec la nouvelle valeur pour mettre à jour le store */
 					this.$store.dispatch('updateCategoryOrder', value);
 				}
 
 			},
-
-
+      // Options de vue draggable
 			dragOptions() {
 				return {
 					animation: 150,
+          /* Le drag des catégories se fait à partir de lélément 
+          qui porte l'attribut data-drag-category */
 					handle: '[data-drag-category]',
-
-					forceFallback: true, //key to make autoScroll works
+          /* Permet de scroller la page quand l'élément draggé sort 
+          du viewport */
+					forceFallback: true, // key to make autoScroll works
 				}
 			}
 		}

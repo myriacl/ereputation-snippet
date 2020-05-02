@@ -5,8 +5,6 @@
 
 		{{ snippet.title }}
 
-
-
 		<div style="float: right">
 			<button @click="editing=!editing">modifier</button>
 			<button>supprimer</button>

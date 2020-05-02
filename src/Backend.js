@@ -1,3 +1,5 @@
+/* On sauvegarde la position des catégories via un tableau qui contient
+l'ordre de leurs id */
 function saveCategoriesPosition(categories) {
 
     return new Promise(resolve => {
@@ -5,6 +7,7 @@ function saveCategoriesPosition(categories) {
         //ajax goes here
         console.log('ajax call ', categories.map(category => category.id));
 
+        /* Quand la promesse est résolue on retroune un objet de succès */
         resolve({
             success: true,
             message: null
@@ -15,7 +18,12 @@ function saveCategoriesPosition(categories) {
 
 
 function load() {
-
+    /* On simule le retour d'un appel asynchrone qui renvoie une promesse
+    La promesse est résolue quand la fonction de callback
+    resolve passée en paramètre de la promesse est appelée avec sa valeur
+    en argument ici l'objet réponse. Quand la promesse est résolue
+    .then() est appelé avec comme argument la valeur de resolve()
+    ici l'objet reponse */ 
     return new Promise(resolve => {
 
         let response = {
@@ -50,6 +58,7 @@ function load() {
                         id: 1,
                         title: 'A cause du bruit',
                         category_id: 1,
+                        position: 1,
                         content: [
                             {
                                 language_id: 1,
@@ -65,7 +74,7 @@ function load() {
                         id: 2,
                         title: 'A cause du staff',
                         category_id: 1,
-                        position: 1,
+                        position: 2,
                         content: [
                             {
                                 language_id: 1,
@@ -97,7 +106,7 @@ function load() {
             }
         };
 
-
+        /* La promesse est résolue à cette endroit quand resolve est appelée */
         resolve(response)
 
 
