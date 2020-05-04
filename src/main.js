@@ -79,6 +79,7 @@ export function uuid() {
 /* STORE */
 function getStore() {
 
+
     let state = {
         categories: [],
         snippets: [],

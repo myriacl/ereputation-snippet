@@ -48,7 +48,7 @@
                     selon leur propriété position */
                     return this.$store.state.snippets.filter(snippet => {
                         return snippet.category_id === this.category.id
-                    }).sort((item1, item2) => (+item1.position - +item2.position));
+                    }).sort((item1, item2) => (item1.position - item2.position));
                 },
                 set(value) {
                     // On récupère tableau des snippets modifié par draggable

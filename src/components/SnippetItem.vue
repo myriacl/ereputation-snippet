@@ -12,22 +12,18 @@
                 <button class="btn btn-primary ml-2" @click="deleteSnippet(snippet.id)">supprimer</button>
             </div>
         </div>
-        <AccordeonTransition :editing="editing">
-            <SnippetItemEditor :snippet="snippet" @close-editor="editing=!editing"></SnippetItemEditor>
-        </AccordeonTransition>
+        <SnippetItemEditor v-if="editing" :snippet="snippet" @close-editor="editing=!editing"></SnippetItemEditor>
     </div>
 </template>
 
 <script>
     import SnippetItemEditor from './SnippetItemEditor'
-    import AccordeonTransition from './AccordeonTransition'
 
     export default {
         name: "SnippetItem",
         props: ['snippet'],
         components: {
             SnippetItemEditor,
-            AccordeonTransition
         },
         data() {
             return {
