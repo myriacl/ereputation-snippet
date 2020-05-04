@@ -1,16 +1,24 @@
 <template>
 
-	<div style="padding:15px;border:3px solid lightcoral;margin:15px">
-		<h3>
-			<button data-drag-category>↕</button>
-			{{ category.name }}
-		</h3>
+	<div style="padding:15px;border:3px solid black;margin:15px">
+      <h3 class="p-2">
+        <button class="btn btn-secondary btn-sm mr-2" data-drag-category>↕</button>
+        {{ category.name }}
+      </h3>
 
-		<draggable v-model="snippets" v-bind="dragOptions">
-			<SnippetItem v-for="snippet in snippets" :snippet="snippet" :key="snippet.id"></SnippetItem>
+		<draggable 
+      v-model="snippets" 
+      v-bind="dragOptions" 
+      :class="'zone' + category.id" 
+      @change="end"
+    > 
+			<SnippetItem 
+        v-for="(snippet, index) in snippets" 
+        :snippet="snippet" 
+        :key="`${index}-${snippet.id}`"
+      >
+      </SnippetItem>
 		</draggable>
-    {{ snippets }}
-
 	</div>
 
 </template>
@@ -22,7 +30,12 @@
 
 	export default {
 		name: "SnippetCategory",
-		props: ['category'],
+    props: ['category'],
+    data() {
+      return {
+        newSnippets: []
+      }
+    },
 		components: {
 			SnippetItem,
 			draggable
@@ -38,19 +51,8 @@
           }).sort((item1, item2) => (+item1.position - +item2.position));
 				},
 				set(value) {
-          /* On récupère le tableau value des snippets de la catégorie
-          réordonné par draggable, on met à jour la propriété position
-          des snippets en fonction de leur index dans le tableau et on leur
-          attribut leur nouveau category_id si ils proviennent d'un autre
-          block de catégorie */
-          let snippetsUdpated = value.map((obj, index) => {
-            obj.category_id = this.category.id
-            obj.position = index + 1;
-            return obj;
-          })
-          /* On dispatch une action updateSnippetsOrder avec les snippets à 
-          mettre à jour dans le store */
-          this.$store.dispatch('updateSnippetsOrder', snippetsUdpated);
+          // On récupère tableau des snippets modifié par draggable
+          this.newSnippets = value
 				}
 			},
 			dragOptions(){
@@ -58,9 +60,32 @@
 					group: 'snippets',
 					animation: 150,
 					handle: '[data-drag-snippet]',
-					forceFallback: true, //key to make autoScroll works
-				}
-			}
-		}
+					forceFallback: true, // Key to make autoScroll works
+        }
+      }
+    },
+    methods: {
+      end(event) {
+        console.log('end', event);
+        /* On ne dispatch pas sur l'event remove pour ne pas  
+        générer deux événements successifs quand on passe un item
+        d'une liste à une autre */
+        if (event.added || event.moved) {
+          /* On récupère le tableau value des snippets de la catégorie
+           réordonné par draggable, on met à jour la propriété position
+           des snippets en fonction de leur index dans le tableau et on leur
+           attribut leur nouveau category_id si ils proviennent d'un autre
+           block de catégorie */
+           let snippetsUdpated = this.newSnippets.map((obj, index) => {
+             obj.category_id = this.category.id
+             obj.position = index + 1;
+             return obj;
+           })
+           /* On dispatch une action updateSnippetsOrder avec les snippets à 
+           mettre à jour dans le store */
+           this.$store.dispatch('updateSnippetsOrder', snippetsUdpated);
+        }
+      }
+    }
 	}
 </script>

@@ -1,8 +1,6 @@
-<template>
-
+<template>  
 	<div>
-		Hello
-
+    <button @click="addCategory" class="btn btn-primary">Ajouter une catégorie</button>
     <!-- Le draggable est synchronisé avec le tableau des catégories
     via v-model. Si on bouge les composants SnippetCategory. 
     Les modifications se répercuteront sur le tableau categories qui est 
@@ -11,17 +9,19 @@
       <!-- On boucle sur le tableau d'objets de la propriété 
       computed categories et on passe chaque objet category au composant
       SnippetCategory -->
-			<SnippetCategory v-for="category in categories" :category="category" :key="category.id">
+			<SnippetCategory 
+        v-for="category in categories" 
+        :category="category" 
+        :key="category.id"
+      >
 			</SnippetCategory>
 		</draggable>
-
-
 	</div>
 
 </template>
 
 <script>
-	import SnippetCategory from "./SnippetCategory";
+  import SnippetCategory from "./SnippetCategory";  
 
 	let draggable = require('vuedraggable');
 
@@ -32,7 +32,6 @@
 			draggable
 		},
 		computed: {
-
 			categories:{
 				get(){
           /* On récupère le tableau des categories du state depuis le store
@@ -44,7 +43,7 @@
         ces changements via le setter set(value) où value est la nouvelle
         valeur de la propriété */
 				set(value) {
-          console.log('valueCat', value); ///////////////////////////////////////////
+          // console.log('valueCat', value); ///////////////////////////////////////////
           /* Si categories change on dispatch une action updateCategoryOrder
           avec la nouvelle valeur pour mettre à jour le store */
 					this.$store.dispatch('updateCategoryOrder', value);
@@ -63,7 +62,23 @@
 					forceFallback: true, // key to make autoScroll works
 				}
 			}
-		}
+    },
+    methods: {
+      addCategory() {
+        this.windowUtils.ui.prompt('Ajouter une nouvelle catégorie').then(response => {
+          if (response) {
+            this.$store.dispatch('addCategory', response);
+          }
+        })
+        
+      }
+    }
 	}
 </script>
+
+ <style>
+  body {
+    padding: 15px;
+  }  
+ </style>
 

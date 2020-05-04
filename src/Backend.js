@@ -5,15 +5,51 @@ function saveCategoriesPosition(categories) {
     return new Promise(resolve => {
 
         //ajax goes here
-        console.log('ajax call ', categories.map(category => category.id));
+        console.log('ajax call categories', categories.map(category => category.id));
 
-        /* Quand la promesse est résolue on retroune un objet de succès */
+        /* Quand la promesse est résolue on retourne un objet de succès */
         resolve({
             success: true,
             message: null
         });
     });
+}
 
+/* On sauvegarde la position des snippets */
+function saveSnippetsPosition(snippets) {
+
+  return new Promise(resolve => {
+
+      //ajax goes here
+      console.log('ajax call snippets', snippets.map(snippet => [snippet.id, snippet.category_id, snippet.position]));
+      console.log('ajax call snippets', snippets.map(snippet => {
+        return { id: snippet.id, category_id: snippet.category_id, position: snippet.position }
+      }
+      ));
+
+      /* Quand la promesse est résolue on retourne un objet de succès */
+      resolve({
+          success: true,
+          message: null
+      });
+  });
+}
+
+/* On sauvegarde le snippet mis à jour */
+function saveSnippet(snippetModified) {
+
+  return new Promise(resolve => {
+
+      //ajax goes here
+      console.log('ajax call save snippet', [snippetModified.id, snippetModified.title, snippetModified.contents]);
+      console.log('ajax call save snippet', {id: snippetModified.id, title: snippetModified.title, contents: snippetModified.contents});
+
+      /* Quand la promesse est résolue on retourne un objet de succès */
+      resolve({
+          success: true,
+          message: null
+      });
+  });
 }
 
 
@@ -59,7 +95,7 @@ function load() {
                         title: 'A cause du bruit',
                         category_id: 1,
                         position: 1,
-                        content: [
+                        contents: [
                             {
                                 language_id: 1,
                                 content: "Lorem ipsum en francais"
@@ -75,7 +111,7 @@ function load() {
                         title: 'A cause du staff',
                         category_id: 1,
                         position: 2,
-                        content: [
+                        contents: [
                             {
                                 language_id: 1,
                                 content: "Toute notre équipe vous présente ses plus plates excuses"
@@ -91,7 +127,7 @@ function load() {
                         title: 'Remercie le staff',
                         category_id: 2,
                         position: 1,
-                        content: [
+                        contents: [
                             {
                                 language_id: 1,
                                 content: "Merci mreci mreci"
@@ -108,8 +144,6 @@ function load() {
 
         /* La promesse est résolue à cette endroit quand resolve est appelée */
         resolve(response)
-
-
     })
 
 
@@ -123,5 +157,7 @@ function load() {
 
 export default {
     load,
-    saveCategoriesPosition
+    saveCategoriesPosition,
+    saveSnippetsPosition,
+    saveSnippet
 }

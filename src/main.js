@@ -1,25 +1,47 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import Backend from "./Backend";
+import ReputationSnippetEditor from "./components/ReputationSnippetEditor";
+
+import cloneDeep from 'lodash/cloneDeep';
+
+import $ from 'jquery'
+import 'bootstrap'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+Vue.use(Vuex)
+
+Vue.config.productionTip = false
+
+let store = getStore()
 
 window.app = {
     ui: {
         confirm(msg) {
             return new Promise(resolve => {
-
                 let response = window.confirm(msg);
-
                 if (response) {
                     resolve();
                 }
-
             });
         },
         error(msg) {
             alert('Error !' + String(msg))
         },
         success() {
-            alert('success !')
+          let str = `<div class="toaster alert alert-success" role="alert" style="position: absolute; top: 0; left: 50%; margin-left: -50px;">
+          Success
+          </div>`
+          var z = document.createElement('div'); // is a node
+          z.innerHTML = str;
+          document.body.appendChild(z);
+          console.log('yes')
+          window.setTimeout(function() {
+            $(".toaster.alert").fadeTo(200, 0).slideUp(200, function(){
+                $(this).remove(); 
+            });
+        }, 500);
         },
         prompt(title, value) {
             return new Promise(resolve => {
@@ -32,15 +54,11 @@ window.app = {
     }
 }
 
-
-Vue.use(Vuex)
-import Backend from "./Backend";
-import ReputationSnippetEditor from "./components/ReputationSnippetEditor";
-
-Vue.config.productionTip = false
+// Permet d'accéder à window dans les methods des components
+Vue.prototype.windowUtils = window.app
 
 
-let store = getStore()
+/* INSTANCE DE VUE */
 
 // On instancie la vue racine
 new Vue({
@@ -54,7 +72,11 @@ new Vue({
 avec les données */
 store.dispatch('load');
 
+export function uuid() {
+  return Math.random().toString(16).slice(2)
+}
 
+/* STORE */
 function getStore() {
 
     let state = {
@@ -73,7 +95,17 @@ function getStore() {
         languages(state, payload) {
             state.languages = payload;
         },
-
+        add_category(state, categoryName) {
+          state.categories.push({
+            id: uuid(),
+            name: categoryName
+          })
+        },
+        delete_snippet(state, snippetId) {
+          state.snippets.splice(state.snippets.findIndex(snippet => {
+            return snippet.id === snippetId;
+          }), 1);
+        }
     };
 
     let actions = {
@@ -130,7 +162,48 @@ function getStore() {
           /* On commit le nouveau tableau des snippets grâce à la mutation
           snippets */
           commit('snippets', payload);
-        }
+          /* On sauvegarde la position du nouveau tableau
+          sur le serveur via notre service Backend.
+          saveSnippetsPosition renvoie une promesse */
+          Backend.saveSnippetsPosition(payload).then(response => {
+            console.log(response.success)
+            /* Si la réponse est un succès  */
+            if (response.success) {
+                // On affiche une notification de succès
+                window.app.ui.success()
+            } else {
+                // Sinon on affiche l'erreur
+                window.app.ui.error(response.message)
+            }
+          });
+        },
+        saveSnippet({state, commit}, snippetModified) {          
+          let payload = state.snippets.map(snippet => {       
+          if (snippet.id === snippetModified.id) {     
+            snippet = cloneDeep(snippetModified)
+          }         
+            return snippet
+          });
+
+          commit('snippets', payload);
+
+          Backend.saveSnippet(snippetModified).then(response => {
+            /* Si la réponse est un succès  */
+            if (response.success) {
+                // On affiche une notification de succès
+                window.app.ui.success()
+            } else {
+                // Sinon on affiche l'erreur
+                window.app.ui.error(response.message)
+            }
+          });
+        },
+        addCategory({commit}, categoryName) {         
+          commit('add_category', categoryName);
+        },
+        deleteSnippet({commit}, snippetId) {         
+          commit('delete_snippet', snippetId);
+        }   
     };
 
     return new Vuex.Store({
