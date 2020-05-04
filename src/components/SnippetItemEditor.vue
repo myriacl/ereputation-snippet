@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="form-group pt-3">
-            <input class="form-control" v-model="snippetModified.title" type="text" placeholder="Title goes here">
+            <input class="form-control" v-model="title" type="text" placeholder="Title goes here">
         </div>
 
         <ul class="nav nav-tabs pb-2 border-bottom-0">
