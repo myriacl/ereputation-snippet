@@ -18,38 +18,38 @@ function saveCategoriesPosition(categories) {
 /* On sauvegarde la position des snippets */
 function saveSnippetsPosition(snippets) {
 
-  return new Promise(resolve => {
+    return new Promise(resolve => {
 
-      //ajax goes here
-      console.log('ajax call snippets', snippets.map(snippet => [snippet.id, snippet.category_id, snippet.position]));
-      console.log('ajax call snippets', snippets.map(snippet => {
-        return { id: snippet.id, category_id: snippet.category_id, position: snippet.position }
-      }
-      ));
+        //ajax goes here
+        console.log('ajax call snippets', snippets.map(snippet => [snippet.id, snippet.category_id, snippet.position]));
+        console.log('ajax call snippets', snippets.map(snippet => {
+                return {id: snippet.id, category_id: snippet.category_id, position: snippet.position}
+            }
+        ));
 
-      /* Quand la promesse est résolue on retourne un objet de succès */
-      resolve({
-          success: true,
-          message: null
-      });
-  });
+        /* Quand la promesse est résolue on retourne un objet de succès */
+        resolve({
+            success: true,
+            message: null
+        });
+    });
 }
 
 /* On sauvegarde le snippet mis à jour */
 function saveSnippet(snippetModified) {
 
-  return new Promise(resolve => {
+    return new Promise(resolve => {
 
-      //ajax goes here
-      console.log('ajax call save snippet', [snippetModified.id, snippetModified.title, snippetModified.contents]);
-      console.log('ajax call save snippet', {id: snippetModified.id, title: snippetModified.title, contents: snippetModified.contents});
+        //ajax goes here
+        console.log('ajax call save snippet', [snippetModified.id, snippetModified.title, snippetModified.contents]);
+        console.log('ajax call save snippet', {id: snippetModified.id, title: snippetModified.title, contents: snippetModified.contents});
 
-      /* Quand la promesse est résolue on retourne un objet de succès */
-      resolve({
-          success: true,
-          message: null
-      });
-  });
+        /* Quand la promesse est résolue on retourne un objet de succès */
+        resolve({
+            success: true,
+            message: null
+        });
+    });
 }
 
 
@@ -59,7 +59,7 @@ function load() {
     resolve passée en paramètre de la promesse est appelée avec sa valeur
     en argument ici l'objet réponse. Quand la promesse est résolue
     .then() est appelé avec comme argument la valeur de resolve()
-    ici l'objet reponse */ 
+    ici l'objet reponse */
     return new Promise(resolve => {
 
         let response = {
