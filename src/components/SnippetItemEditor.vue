@@ -1,31 +1,46 @@
 <template>
-  <div>
-    <div class="form-group pt-3">
-      <input
-        class="form-control"
-        v-model="title"
-        type="text"
-        placeholder="Title goes here"
-      />
+  <div class="box-fieldset">
+    <div class="form-group">
+      <span>Nom</span><br />
+      <input type="text" class="form-control" v-model="title" />
     </div>
+    <div class="tab-body ">
+      <div class="tab-heading">
+        <nav>
+          <div class="nav-tabs nav">
+            <a
+              @click="current_language_id = language.id"
+              v-for="language in languages"
+              :key="language.id"
+              class="nav-item nav-link"
+              :class="{ active: current_language_id === language.id }"
+              @click.prevent
+              href="#"
+            >
+              <span class="name">{{ language.name }}</span>
+            </a>
+          </div>
+        </nav>
+      </div>
 
-    <ul class="nav nav-tabs pb-2 border-bottom-0">
-      <li
-        class="nav-item"
-        @click="current_language_id = language.id"
-        v-for="language in languages"
-        :key="language.id"
-      >
-        <a
-          class="nav-link"
-          :class="{ active: current_language_id === language.id }"
-          @click.prevent
-          href="#"
+      <div id="nav-tabContent" class="tab-content">
+        <div
+          class="tab-pane"
+          v-for="language in languages"
+          :key="language.id"
+          v-show="current_language_id === language.id"
         >
-          {{ language.name }}
-        </a>
-      </li>
-    </ul>
+          <div class="form-group">
+            <textarea
+              class="form-control"
+              v-model="contents_hash[language.id]"
+              style="width: 100%"
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div
       class="form-group"
@@ -42,15 +57,17 @@
     </div>
 
     <div class="text-right">
-      <button class="btn btn-primary ml-2" @click="saveSnippet">
+      <button class="btn btn-secondary ml-2" @click="saveSnippet">
         Enregistrer
       </button>
-      <button class="btn btn-secondary  ml-2" @click="cancel">Annuler</button>
+      <button class="btn btn-outline-secondary ml-2" @click="cancel">
+        Annuler
+      </button>
     </div>
 
-    <strong>Snippet:</strong> {{ snippet }} <br />
+    <!-- <strong>Snippet:</strong> {{ snippet }} <br />
     <strong>contents_hash:</strong> {{ contents_hash }}<br />
-    {{ create }}
+    {{ create }} -->
   </div>
 </template>
 
@@ -65,7 +82,6 @@ export default {
       contents_hash: this.freshContentsHash(this.snippet),
       current_language_id: 1,
       title: this.snippet.title
-      // snippetModified: cloneDeep(this.snippet)
     };
   },
   computed: {
@@ -120,7 +136,7 @@ export default {
           contents
         };
       }
-      
+
       /* On dispatch l'action saveSnippet avec les données du
       snippet à mettre à jour ou le snippet entier à ajouter
       au store et un argument create qui indiquera si c'est 
@@ -129,7 +145,7 @@ export default {
         snippetToSave: snippet,
         create: this.create
       });
-      
+
       /* On émet un événement qui indique que l'on a sauver 
       le snippet */
       this.$emit('snippet-save');

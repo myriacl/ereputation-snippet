@@ -1,8 +1,13 @@
 <template>
-  <div>
-    <button @click="addCategory" class="btn btn-primary">
-      Ajouter une catégorie
-    </button>
+  <div class="container">
+    <div class="header mb-1">
+      <h4 class="box-title">
+        Catégorie
+      </h4>
+      <button @click="addCategory" class="btn btn-link">
+        + Ajouter une catégorie
+      </button>
+    </div>
     <!-- Le draggable est synchronisé avec le tableau des catégories
         via v-model. Si on bouge les composants SnippetCategory.
         Les modifications se répercuteront sur le tableau categories qui est
@@ -18,12 +23,12 @@
       >
       </SnippetCategory>
     </draggable>
-      <pre>
+      <!-- <pre>
         {{ categories }}
       </pre>
       <pre>
         {{ this.$store.state.snippets }}                               
-      </pre>
+      </pre> -->
   </div>
 </template>
 
@@ -82,8 +87,8 @@ export default {
 };
 </script>
 
-<style>
-body {
-  padding: 15px;
+<style scoped>
+.header {
+  display: flex;  
 }
 </style>

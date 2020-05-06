@@ -1,23 +1,27 @@
 <template>
-  <div class="snippet-row mb-3 mt-3 pb-3 border-bottom">
-    <div class="d-flex align-items-center">
-      <button class="btn btn-secondary" data-drag-snippet>☰</button>
-
-      <div class="d-inline-block pl-2">
-        {{ snippet.title }} <strong>Position: {{ snippet.position }}</strong>
+  <div class="snippet-item snippet-row mb-2 mt-2 pb-2">
+    <div class="snippet-container">
+      <div class="block-title">
+        <button class="btn btn-link mr-1" data-drag-snippet>☰</button>
+        <strong>{{ snippet.title }}</strong>
+        <strong> / Position: {{ snippet.position }}</strong>
       </div>
 
-      <div class="ml-auto">
-        <div v-show="!editing">
-          <button class="btn btn-primary ml-2" @click="editing = !editing">
+      <div class="ml-auto btn-container">
+        <div class="btn-group" v-show="!editing">
+          <button class="btn btn-outline-danger" @click="deleteSnippet()">
+            icoSuppr
+          </button>
+          <button class="btn btn-secondary" @click="editing = !editing">
             modifier
           </button>
-          <button class="btn btn-primary ml-2" @click="deleteSnippet()">
-            supprimer
-          </button>
         </div>
-        <button class="btn btn-primary" v-show="editing" @click="editing = !editing">
-            ⋀
+        <button
+          class="btn btn-secondary"
+          v-show="editing"
+          @click="editing = !editing"
+        >
+          Fermer
         </button>
       </div>
     </div>
@@ -59,8 +63,25 @@ export default {
 </script>
 
 <style>
-.snippet-row:last-child {
-  border-bottom: none !important;
-  margin-bottom: 0 !important;
+.snippet-item {
+  border-bottom: 1px solid #dee2e6;
+}
+.snippet-item .snippet-container {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 767px) {
+  .snippet-item .snippet-container {
+    display: initial;
+  }
+  .snippet-item .btn-container {
+    text-align: right;
+    padding-top: 0.5rem;
+  }
+  .snippet-item .block-title {
+    display: flex;
+    align-items: center;
+  }
 }
 </style>

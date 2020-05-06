@@ -1,22 +1,20 @@
 <template>
-  <div
-    style="padding:15px;border:3px solid black;margin:15px; background:white"
-  >
-    <div class="d-flex align-items-center">
-      <button class="btn btn-secondary btn-sm mr-2" data-drag-category>
-        ↕
+  <div class="box-xxl-less shadow-lg mb-0 snippet-category">
+    <div class="header pb-2">
+      <button class="btn btn-link" data-drag-category>
+        ↕ ico_fa-arrows-v
       </button>
-      <h3 class="p-2">
-        {{ category.name }}
-      </h3>
+      <h6 class="pl-2 mb-0">
+        <strong>{{ category.name }}</strong>
+      </h6>
+      <button class="btn btn-link" @click="editName">
+        icoModif
+      </button>
       <div class=" ml-auto">
-        <button class="btn btn-primary ml-2" @click="editName">
-          modifier
-        </button>
         <!-- Si le tableau des snippets est vide on affiche
         le bouton pour supprimer une catégorie -->
         <button
-          class="btn btn-primary ml-2"
+          class="btn btn-outline-danger ml-2"
           v-if="!snippets.length"
           @click="deleteCategory"
         >
@@ -26,10 +24,10 @@
     </div>
 
     <draggable
+      class="drop-category"
       v-model="snippets"
       v-bind="dragOptions"
       :class="'zone' + category.id"
-      style="min-height: 40px;"
     >
       <SnippetItem
         v-for="snippet in snippets"
@@ -39,10 +37,14 @@
       </SnippetItem>
     </draggable>
 
-    <button :disabled="editing" class="btn btn-primary mt-2" @click="createSnippet">
-      Ajouter un snippet
+    <button
+      :disabled="editing"
+      class="btn btn-link mt-2"
+      @click="createSnippet"
+    >
+      + Ajouter une réponse
     </button>
-    
+
     <!-- On injecte le composant SnippetItemEditor seulement
     quand on a récupéré le snippet vide depuis la bdd serveur -->
     <div v-if="emptySnippet">
@@ -187,3 +189,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.snippet-category .header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.snippet-category .drop-category {
+  min-height: 40px;
+}
+</style>

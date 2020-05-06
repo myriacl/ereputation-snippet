@@ -8,7 +8,10 @@ import { debounce } from 'lodash';
 
 import $ from 'jquery'
 import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+//import 'bootstrap/dist/css/bootstrap.min.css';
+
+//import './assets/css/app-vendors.css';
+//import './assets/css/app.css';
 
 Vue.use(Vuex)
 
