@@ -39,7 +39,7 @@
       </SnippetItem>
     </draggable>
 
-    <button class="btn btn-primary mt-2" @click="createSnippet">
+    <button :disabled="editing" class="btn btn-primary mt-2" @click="createSnippet">
       Ajouter un snippet
     </button>
     
