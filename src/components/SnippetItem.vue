@@ -7,12 +7,17 @@
         {{ snippet.title }} <strong>Position: {{ snippet.position }}</strong>
       </div>
 
-      <div class="ml-auto" v-show="editing === false">
-        <button class="btn btn-primary ml-2" @click="editing = !editing">
-          modifier
-        </button>
-        <button class="btn btn-primary ml-2" @click="deleteSnippet()">
-          supprimer
+      <div class="ml-auto">
+        <div v-show="!editing">
+          <button class="btn btn-primary ml-2" @click="editing = !editing">
+            modifier
+          </button>
+          <button class="btn btn-primary ml-2" @click="deleteSnippet()">
+            supprimer
+          </button>
+        </div>
+        <button class="btn btn-primary" v-show="editing" @click="editing = !editing">
+            ⋀
         </button>
       </div>
     </div>
