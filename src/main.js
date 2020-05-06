@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import Backend from "./Backend";
 import ReputationSnippetEditor from "./components/ReputationSnippetEditor";
 
-import { cloneDeep, debounce, throttle } from 'lodash'; // eslint-disable-line no-unused-vars
+import { debounce } from 'lodash';
 
 import $ from 'jquery'
 import 'bootstrap';
@@ -97,6 +97,11 @@ function getStore() {
     add_snippet(state, snippet) {
       state.snippets.push(snippet)
     },
+    delete_category(state, categoryId) {
+      state.categories.splice(state.categories.findIndex(category => {
+        return category.id === categoryId;
+      }), 1);
+    },
     delete_snippet(state, snippetId) {
       state.snippets.splice(state.snippets.findIndex(snippet => {
         return snippet.id === snippetId;
@@ -138,6 +143,9 @@ function getStore() {
         }
       });
     },
+    /* On debounce le dispatch vers l'action updateSnippetsOrder 
+    pour éviter un double appel quand on déplace un snippet
+    d'une catégorie à une autre */
     debounceUpdateSnippetsOrder: debounce(({ dispatch }, snippetsUpdated) => {
       dispatch('updateSnippetsOrder', snippetsUpdated);
     }, 100),
@@ -145,8 +153,8 @@ function getStore() {
       // On parcours le tableau des snippets du state
       let payload = state.snippets.map(snippet => {
         /* Pour chaque snippet on cherche grâce à son id
-        si il existe dans le tableau des snippets à mettre à jour
-        un snippet avec le même id si l existe on le retroune dans
+        si il existe dans le tableau des snippets à mettre à jour,
+        un snippet avec le même id, si l existe on le retroune dans
         snippetUpdated */
         let snippetUpdated = snippetsUpdated.find(snipUp => snipUp.id === snippet.id);
         // Si on trouve un snippet mis à jour
@@ -154,36 +162,36 @@ function getStore() {
           // On remplace le snippet du state par le nouveau mis à jour
           snippet = snippetUpdated
         }
-        // Sinon on retourne le snippet tel quel sans modification
+        // On retourne le snippet avec ou sans modification
         return snippet
       });
       /* On commit le nouveau tableau des snippets grâce à la mutation
       snippets */
       commit('snippets', payload);
+
       /* On sauvegarde la position du nouveau tableau
-      sur le serveur via notre service Backend.
-      saveSnippetsPosition renvoie une promesse */
+      sur le serveur via le service Backend.
+      saveSnippetsPosition() renvoie une promesse */
       Backend.saveSnippetsPosition(payload).then(response => {
-        console.log(response.success) //////////////////////////////////////////////
-        /* Si la réponse est un succès  */
         if (response.success) {
-          // On affiche une notification de succès
           window.app.ui.success()
         } else {
-          // Sinon on affiche l'erreur
           window.app.ui.error(response.message)
         }
       });
     },
-    // eslint-disable-next-line no-unused-vars
+    /* Permet de mettre à jour ou créer un snippet */
     saveSnippet({ state, commit }, { snippetToSave, create }) {
+      /* Si on est en mode creation on appelle la
+      mutation add_snippet qui va push le nouveau snippet dans
+      le tableau des snippets */
       if (create) {
-        console.log('ok create', );
-        console.log('add_snippet', snippetToSave);
-
+        console.log('ok create snippet'); ///////////////////////////
         commit('add_snippet', snippetToSave);
+      /* Sinon c'est que l'on est en mode update alors on
+      update le tabeau des snippets avec le nouveau snippet */
       } else {
-        console.log('nok create', );
+        console.log('ok update snippet');
         let payload = state.snippets.map(snippet => {
           if (snippet.id === snippetToSave.id) {
             snippet.title = snippetToSave.title;
@@ -191,34 +199,25 @@ function getStore() {
           }
           return snippet
         });
-  
-        commit('snippets', payload);      }
-
-
+        commit('snippets', payload);
+      }      
+      /* On sauvegarde le nouveau snippet dans la bdd */
       Backend.saveSnippet(snippetToSave).then(response => {
-        /* Si la réponse est un succès  */
         if (response.success) {
-          // On affiche une notification de succès
           window.app.ui.success()
         } else {
-          // Sinon on affiche l'erreur
           window.app.ui.error(response.message)
         }
       });
     },
     addCategory({ commit }, name) {
       Backend.addCategory(name).then(response => {
-        console.log(response.success) //////////////////////////////////////////////
-        /* Si la réponse est un succès  */
         if (response.success) {
-          // On affiche une notification de succès
-          window.app.ui.success()
-          /* On commit l'objet category avec son id généré côté
+          /* On commit ajoute l'objet category avec son id généré côté
           serveur bdd dans le store */
-          console.log('response.message.category', response.message.category); ////////////////////////////////////////////
           commit('add_category', response.message.category);
+          window.app.ui.success()
         } else {
-          // Sinon on affiche l'erreur
           window.app.ui.error(response.message)
         }
       });
@@ -226,14 +225,25 @@ function getStore() {
     deleteSnippet({ commit }, snippetId) {
       commit('delete_snippet', snippetId);
     },
-    updateCategory({ state, commit }, { id, name }) {
+    deleteCategory({ commit }, categoryId) {
+      commit('delete_category', categoryId);
+    },
+    updateCategory({ state, commit }, categoryUpdated) {
       let payload = state.categories.map(category => {
-        if (category.id === id) {
-          category.name = name;
+        if (category.id === categoryUpdated.id) {
+          category.name = categoryUpdated.name;
         }
         return category
       });
       commit('categories', payload);
+
+      Backend.updateCategory(categoryUpdated).then(response => {
+        if (response.success) {
+          window.app.ui.success()
+        } else {
+          window.app.ui.error(response.message)
+        }
+      });
     }
   };
 

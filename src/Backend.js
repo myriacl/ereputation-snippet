@@ -1,3 +1,4 @@
+// Permet de générer un fake id unique
 function uuid() {
   return Math.random().toString(16).slice(2)
 }
@@ -5,9 +6,7 @@ function uuid() {
 /* On sauvegarde la position des catégories via un tableau qui contient
 l'ordre de leurs id */
 function saveCategoriesPosition(categories) {
-
   return new Promise(resolve => {
-
     //ajax goes here
     console.log('ajax call categories', categories.map(category => category.id));
 
@@ -21,9 +20,7 @@ function saveCategoriesPosition(categories) {
 
 /* On sauvegarde la position des snippets */
 function saveSnippetsPosition(snippets) {
-
   return new Promise(resolve => {
-
     //ajax goes here
     //console.log('ajax call snippets', snippets.map(snippet => [snippet.id, snippet.category_id, snippet.position]));
     console.log('ajax call snippets', snippets.map(snippet => {
@@ -31,7 +28,6 @@ function saveSnippetsPosition(snippets) {
     }
     ));
 
-    /* Quand la promesse est résolue on retourne un objet de succès */
     resolve({
       success: true,
       message: null
@@ -41,13 +37,10 @@ function saveSnippetsPosition(snippets) {
 
 /* On sauvegarde le snippet mis à jour */
 function saveSnippet(snippetToSave) {
-
   return new Promise(resolve => {
-
     //ajax goes here
     console.log('ajax call save snippet', { id: snippetToSave.id, title: snippetToSave.title, contents: snippetToSave.contents });
 
-    /* Quand la promesse est résolue on retourne un objet de succès */
     resolve({
       success: true,
       message: null
@@ -55,34 +48,42 @@ function saveSnippet(snippetToSave) {
   });
 }
 
-/* On sauvegarde le snippet mis à jour */
 function addCategory(name) {
-
   return new Promise(resolve => {
-
     //ajax goes here
-    console.log('ajax call save snippet', { name });
+    console.log('ajax call add category', { name });
 
-    /* Quand la promesse est résolue on retourne un objet de succès */
     resolve({
       success: true,
+      /* On retourne un objet category avec un id généré par
+      le serveur */
       message: { category: { id: uuid(), name } }
     });
   });
 }
 
-/* On sauvegarde le snippet mis à jour */
-function getEmptySnippet() {
-
+function updateCategory(category) {
   return new Promise(resolve => {
+    //ajax goes here
+    console.log('ajax call update category', category);
 
+    resolve({
+      success: true,
+      message: null
+    });
+  });
+}
+
+function getEmptySnippet() {
+  return new Promise(resolve => {
     //ajax goes here
     console.log('ajax call get empty snippet');
 
-    /* Quand la promesse est résolue on retourne un objet de succès */
     resolve({
       success: true,
-      message: { 
+      /* On retourne un objet snippet vide avec un id généré par
+      le serveur */
+      message: {
         snippet: {
           id: uuid(),
           title: '',
@@ -103,7 +104,7 @@ function getEmptySnippet() {
             }
           ]
         }
-      } 
+      }
     });
   });
 }
@@ -135,6 +136,10 @@ function load() {
             id: 3,
             name: 'Allemand'
           },
+          {
+            id: 4,
+            name: 'Breton'
+          }
         ],
 
         categories: [
@@ -260,15 +265,8 @@ function load() {
     /* La promesse est résolue à cette endroit quand resolve est appelée */
     resolve(response)
   })
-
-
 }
 
-//
-// function savePosition() {
-//
-// }
-//
 
 export default {
   load,
@@ -276,5 +274,6 @@ export default {
   saveSnippetsPosition,
   saveSnippet,
   addCategory,
+  updateCategory,
   getEmptySnippet
 }

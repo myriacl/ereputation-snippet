@@ -19,7 +19,10 @@
       </SnippetCategory>
     </draggable>
       <pre>
-        {{ this.$store.state.snippets }}
+        {{ categories }}
+      </pre>
+      <pre>
+        {{ this.$store.state.snippets }}                               
       </pre>
   </div>
 </template>

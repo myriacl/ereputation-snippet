@@ -9,9 +9,20 @@
       <h3 class="p-2">
         {{ category.name }}
       </h3>
-      <button class="btn btn-primary ml-auto" @click="editName">
-        modifier
-      </button>
+      <div class=" ml-auto">
+        <button class="btn btn-primary ml-2" @click="editName">
+          modifier
+        </button>
+        <!-- Si le tableau des snippets est vide on affiche
+        le bouton pour supprimer une catégorie -->
+        <button
+          class="btn btn-primary ml-2"
+          v-if="!snippets.length"
+          @click="deleteCategory"
+        >
+          Supprimer
+        </button>
+      </div>
     </div>
 
     <draggable
@@ -31,14 +42,26 @@
     <button class="btn btn-primary mt-2" @click="createSnippet">
       Ajouter un snippet
     </button>
+    
+    <!-- On injecte le composant SnippetItemEditor seulement
+    quand on a récupéré le snippet vide depuis la bdd serveur -->
     <div v-if="emptySnippet">
+      <!-- On passe le snippet initialisé sans contenu
+      au SnippetItemEditor et une props create pour lui indiquer
+      que l'on est en mode creation ce qui n'appellera pas 
+      la même mutation -->
       <SnippetItemEditor
         v-show="editing"
         :snippet="emptySnippet"
-        @snippet-save="handleSaveEvent"
+        @snippet-save="handleSaveNewSnippet"
+        @close-editor="handleClose"
         :create="true"
       ></SnippetItemEditor>
     </div>
+
+    <!-- <div class="mt-3">
+      {{ snippets }}
+    </div> -->
   </div>
 </template>
 
@@ -55,7 +78,8 @@ export default {
   data() {
     return {
       editing: false,
-      emptySnippet: null
+      emptySnippet: null,
+      hasSnippets: false
     };
   },
   components: {
@@ -76,6 +100,11 @@ export default {
           .sort((item1, item2) => item1.position - item2.position);
       },
       set(value) {
+        // if(value) {
+        //   this.hasSnippets = true
+        // } else {
+        //   this.hasSnippets = false
+        // }
         /* On récupère le tableau value des snippets de la catégorie
         réordonné par draggable, on met à jour la propriété position
         des snippets en fonction de leur index dans le tableau et on leur
@@ -106,7 +135,6 @@ export default {
         .prompt('Modifier le nom de la catégorie', this.category.name)
         .then(response => {
           if (response) {
-            console.log(response);
             this.$store.dispatch('updateCategory', {
               id: this.category.id,
               name: response
@@ -114,32 +142,47 @@ export default {
           }
         });
     },
+    deleteCategory() {
+      this.windowUtils.ui.confirm('Confirmation?').then(() => {
+        this.$store.dispatch('deleteCategory', this.category.id);
+      });
+    },
     createSnippet() {
-      //this.$store.dispatch('getEmptySnippet')
       Backend.getEmptySnippet().then(response => {
-        /* Si la réponse est un succès  */
         if (response.success) {
-          // On affiche une notification de succès
-          window.app.ui.success();
-          console.log('response.message.snippet', response.message.snippet); ////////////////////////////////////////////
+          /* On récupère un snippet vide avec un id depuis la
+          bdd serveur */
           let emptySnippet = response.message.snippet;
 
+          /* On initialise le snippet avec sa catégorie
+          et sa position */
           emptySnippet.category_id = this.category.id;
           emptySnippet.position = this.snippets.length + 1;
 
+          // window.app.ui.success();
+
+          /* On prépare la data emptySnippet que l'on va passé en props
+          au SnippetItemEditor */
           this.emptySnippet = emptySnippet;
-          console.log('this.emptySnippet', this.emptySnippet); //////////////////////////////////////////////////
-          this.editing = !this.editing;
+
+          console.log('this.emptySnippet', this.emptySnippet);
+
+          /* On ouvre le SnippetItemEditor */
+          this.editing = true;
         } else {
-          // Sinon on affiche l'erreur
           window.app.ui.error(response.message);
         }
       });
     },
-    handleSaveEvent() {
-      this.emptySnippet={}
-      //this.createSnippet()
-      this.editing = !this.editing
+    handleSaveNewSnippet() {
+      /* On vide emptySnippet en attente d'un nouvel objet */
+      this.emptySnippet = {};
+      /* On ferme le SnippetItemEditor */
+      this.editing = !this.editing;
+    },
+    handleClose() {
+      /* On ferme le SnippetItemEditor */
+      this.editing = !this.editing;
     }
   }
 };

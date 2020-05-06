@@ -4,14 +4,14 @@
       <button class="btn btn-secondary" data-drag-snippet>☰</button>
 
       <div class="d-inline-block pl-2">
-        {{ snippet.title }} Position: {{ snippet.position }}
+        {{ snippet.title }} <strong>Position: {{ snippet.position }}</strong>
       </div>
 
       <div class="ml-auto" v-show="editing === false">
         <button class="btn btn-primary ml-2" @click="editing = !editing">
           modifier
         </button>
-        <button class="btn btn-primary ml-2" @click="deleteSnippet(snippet.id)">
+        <button class="btn btn-primary ml-2" @click="deleteSnippet()">
           supprimer
         </button>
       </div>
@@ -43,10 +43,10 @@ export default {
     };
   },
   methods: {
-    deleteSnippet(snippetId) {
+    deleteSnippet() {
       this.windowUtils.ui.confirm('Confirmation?').then(() => {
         console.log('il a dit oui!');
-        this.$store.dispatch('deleteSnippet', snippetId);
+        this.$store.dispatch('deleteSnippet', this.snippet.id);
       });
     }
   }
