@@ -2,13 +2,14 @@
   <div class="box-xxl-less shadow-lg mb-0 snippet-category">
     <div class="header pb-2">
       <button class="btn btn-link" data-drag-category>
+        <i class="fas fa-address-book"></i>
         <font-awesome-icon icon="arrows-alt-v" />
       </button>
       <h6 class="pl-2 mb-0">
         <strong>{{ category.name }}</strong>
       </h6>
       <button class="btn btn-link p-2" @click="editName">
-        <font-awesome-icon icon="pen" />        
+        <font-awesome-icon icon="pen" />
       </button>
       <div class=" ml-auto">
         <!-- Si le tableau des snippets est vide on affiche
@@ -50,7 +51,7 @@
     <div v-if="emptySnippet">
       <!-- On passe le snippet initialisé sans contenu
       au SnippetItemEditor et une props create pour lui indiquer
-      que l'on est en mode creation ce qui n'appellera pas 
+      que l'on est en mode creation ce qui n'appellera pas
       la même mutation -->
       <SnippetItemEditor
         v-show="editing"

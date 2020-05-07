@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     deleteSnippet() {
-      this.windowUtils.ui.confirm('Confirmation?').then(() => {
+      window.app.ui.confirm('Confirmation?').then(() => {
         console.log('il a dit oui!');
         this.$store.dispatch('deleteSnippet', this.snippet.id);
       });

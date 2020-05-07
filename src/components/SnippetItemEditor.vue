@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     /* Permet de générer un state local pour les objets contents
-    à partir du snippet passé en props pour éviter de cloner 
+    à partir du snippet passé en props pour éviter de cloner
     l'objet entier */
     freshContentsHash(snippet) {
       let contents_hash = {};
@@ -101,7 +101,7 @@ export default {
       this.$store.state.languages.forEach(language => {
         /* Si un language existe dans le store (si on le rajoute
         a posteriori par exemple dans la bdd) mais qu'il n'est pas
-        dans les contents du snippet alors on l'ajoute comme même  
+        dans les contents du snippet alors on l'ajoute comme même
         aux contents avec un contenu vide */
         if (!(language.id in contents_hash)) {
           contents_hash[language.id] = '';
@@ -110,7 +110,7 @@ export default {
       return contents_hash;
     },
     saveSnippet() {
-      /* On peut construit ici le snippet que l'on souhaite renvoyer 
+      /* On peut construit ici le snippet que l'on souhaite renvoyer
       vers le store */
       let contents = [];
       for (let language_id in this.contents_hash) {
@@ -139,14 +139,14 @@ export default {
 
       /* On dispatch l'action saveSnippet avec les données du
       snippet à mettre à jour ou le snippet entier à ajouter
-      au store et un argument create qui indiquera si c'est 
+      au store et un argument create qui indiquera si c'est
       une creation ou un update */
       this.$store.dispatch('saveSnippet', {
         snippetToSave: snippet,
         create: this.create
       });
 
-      /* On émet un événement qui indique que l'on a sauver 
+      /* On émet un événement qui indique que l'on a sauver
       le snippet */
       this.$emit('snippet-save');
 

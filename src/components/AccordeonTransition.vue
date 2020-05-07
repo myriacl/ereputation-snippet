@@ -7,7 +7,7 @@
         <transition name="AccordeonTransition"
                     v-on:before-enter="beforeEnter" v-on:enter="enter"
                     v-on:before-leave="beforeLeave" v-on:leave="leave">
-            <div class="body" v-show="editing">
+            <div class="body" v-if="editing">
                 <div class="body-inner">
                     <slot></slot>
                 </div>

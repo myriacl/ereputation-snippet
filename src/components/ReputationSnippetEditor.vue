@@ -21,13 +21,14 @@
         :category="category"
         :key="category.id"
       >
+
       </SnippetCategory>
     </draggable>
       <!-- <pre>
         {{ categories }}
       </pre>
       <pre>
-        {{ this.$store.state.snippets }}                               
+        {{ this.$store.state.snippets }}
       </pre> -->
   </div>
 </template>
@@ -90,7 +91,7 @@ export default {
 <style scoped lang="scss">
 .rse {
   .header {
-    display: flex;  
+    display: flex;
   }
 }
 </style>

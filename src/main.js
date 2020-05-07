@@ -6,7 +6,8 @@ import ReputationSnippetEditor from "./components/ReputationSnippetEditor";
 
 import { debounce } from 'lodash';
 
-import $ from 'jquery'
+import "./crm_stuff";
+
 import 'bootstrap';
 
 import "./assets/css/styles.scss"
@@ -22,44 +23,6 @@ Vue.use(Vuex)
 Vue.config.productionTip = false
 
 let store = getStore()
-
-window.app = {
-  ui: {
-    confirm(msg) {
-      return new Promise(resolve => {
-        let response = window.confirm(msg);
-        if (response) {
-          resolve();
-        }
-      });
-    },
-    error(msg) {
-      alert('Error !' + String(msg))
-    },
-    success() {
-      //alert('Success')
-      let str = `<div class="toaster alert alert-success" role="alert" style="position: fixed; top: 0; left: 50%; margin-left: -50px;">
-          Success
-          </div>`
-      var z = document.createElement('div'); // is a node
-      z.innerHTML = str;
-      document.body.appendChild(z);
-      window.setTimeout(function () {
-        $(".toaster.alert").fadeTo(200, 0).slideUp(200, function () {
-          $(this).remove();
-        });
-      }, 500);
-    },
-    prompt(title, value) {
-      return new Promise(resolve => {
-        let rep = window.prompt(title, value);
-        if (rep) {
-          resolve(rep);
-        }
-      })
-    }
-  }
-}
 
 // Permet d'accéder à window dans les methods des components
 Vue.prototype.windowUtils = window.app
@@ -150,12 +113,14 @@ function getStore() {
         }
       });
     },
-    /* On debounce le dispatch vers l'action updateSnippetsOrder 
+    /* On debounce le dispatch vers l'action updateSnippetsOrder
     pour éviter un double appel quand on déplace un snippet
     d'une catégorie à une autre */
     debounceUpdateSnippetsOrder: debounce(({ dispatch }, snippetsUpdated) => {
       dispatch('updateSnippetsOrder', snippetsUpdated);
     }, 100),
+
+
     updateSnippetsOrder({ state, commit }, snippetsUpdated) {
       // On parcours le tableau des snippets du state
       let payload = state.snippets.map(snippet => {
@@ -187,6 +152,8 @@ function getStore() {
         }
       });
     },
+
+
     /* Permet de mettre à jour ou créer un snippet */
     saveSnippet({ state, commit }, { snippetToSave, create }) {
       /* Si on est en mode creation on appelle la
