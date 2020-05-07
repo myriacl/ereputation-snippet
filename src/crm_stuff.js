@@ -4,7 +4,7 @@ window.__ = function (txt) {
     return txt;
 };
 
-
+// window.app.ui.loadingFrame(this.$parent.$el, false)
 window.app = {
     ui: {
 
@@ -16,7 +16,6 @@ window.app = {
                 $('body').removeClass('loading');
             }
         },
-
         loadingFrame: function (selector, onOff) {
             $(selector)[onOff ? 'addClass' : 'removeClass']('frame-loading');
         },

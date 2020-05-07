@@ -1,5 +1,5 @@
 <template>
-  <div class="box-fieldset">
+  <div class="box-fieldset" :class="{'frame-loading': isLoading }">
     <div class="form-group">
       <span>Nom</span><br />
       <input type="text" class="form-control" v-model="title" />
@@ -81,28 +81,20 @@ export default {
     return {
       contents_hash: this.freshContentsHash(this.snippet),
       current_language_id: 1,
-      title: this.snippet.title
+      title: this.snippet.title,
+      isLoading: false
     };
   },
   computed: {
     ...mapState(['languages'])
   },
   methods: {
-    /* Permet de générer un state local pour les objets contents
-    à partir du snippet passé en props pour éviter de cloner
-    l'objet entier */
     freshContentsHash(snippet) {
       let contents_hash = {};
-      /* On créer un objet des contents_hash qui va contenir
-      les contenus pour chaque langue */
       snippet.contents.forEach(content => {
         contents_hash[content.language_id] = content.content;
       });
       this.$store.state.languages.forEach(language => {
-        /* Si un language existe dans le store (si on le rajoute
-        a posteriori par exemple dans la bdd) mais qu'il n'est pas
-        dans les contents du snippet alors on l'ajoute comme même
-        aux contents avec un contenu vide */
         if (!(language.id in contents_hash)) {
           contents_hash[language.id] = '';
         }
@@ -110,8 +102,7 @@ export default {
       return contents_hash;
     },
     saveSnippet() {
-      /* On peut construit ici le snippet que l'on souhaite renvoyer
-      vers le store */
+      this.isLoading = true;
       let contents = [];
       for (let language_id in this.contents_hash) {
         contents.push({
@@ -125,8 +116,6 @@ export default {
         contents
       };
 
-      /* Si on crée un nouveau snippet on construit un objet avec
-      toutes ses valeurs */
       if (this.create) {
         snippet = {
           id: this.snippet.id,
@@ -137,33 +126,17 @@ export default {
         };
       }
 
-      /* On dispatch l'action saveSnippet avec les données du
-      snippet à mettre à jour ou le snippet entier à ajouter
-      au store et un argument create qui indiquera si c'est
-      une creation ou un update */
       this.$store.dispatch('saveSnippet', {
         snippetToSave: snippet,
         create: this.create
+      })
+      .then(() => {
+        this.isLoading = false;
+        this.$emit('close-editor');
       });
-
-      /* On émet un événement qui indique que l'on a sauver
-      le snippet */
-      this.$emit('snippet-save');
-
-      /* Si on est en mode creation on efface le contenu des champs
-      en attente de la création d'un nouveau snippet */
-      if (this.create) {
-        this.contents_hash = {};
-        this.title = '';
-      }
+      
     },
     cancel() {
-      /* Quand on annule on regénère le state local avec les
-      valeurs du snippet d'origine */
-      this.contents_hash = this.freshContentsHash(this.snippet);
-      this.title = this.snippet.title;
-
-      /* On émet un événement pour fermer l'éditeur */
       this.$emit('close-editor');
     }
   }

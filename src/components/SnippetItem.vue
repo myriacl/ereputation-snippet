@@ -2,60 +2,55 @@
   <div class="snippet-item snippet-row mb-2 mt-2 pb-2">
     <div class="snippet-container">
       <div class="block-title">
-        <button class="btn btn-link mr-1" data-drag-snippet><font-awesome-icon icon="bars" /></button>
+        <button class="btn btn-link mr-1" data-drag-snippet>
+          <i class="fas fa-bars"></i>
+        </button>
         <strong>{{ snippet.title }}</strong>
-        <strong> / Position: {{ snippet.position }}</strong>
       </div>
 
       <div class="ml-auto btn-container">
         <div class="btn-group" v-show="!editing">
           <button class="btn btn-outline-danger" @click="deleteSnippet()">
-            <font-awesome-icon icon="trash" />
+            <i class="fas fa-trash"></i>
           </button>
           <button class="btn btn-secondary" @click="editing = !editing">
             modifier
           </button>
         </div>
-        <button
-          class="btn btn-secondary"
-          v-show="editing"
-          @click="editing = !editing"
-        >
-          Fermer
-        </button>
       </div>
     </div>
 
-    <AccordeonTransition :editing="editing">
-      <SnippetItemEditor
-        :snippet="snippet"
-        @close-editor="editing = !editing"
-      ></SnippetItemEditor>
-    </AccordeonTransition>
+    <SnippetItemEditor
+      v-if="editing"
+      :snippet="snippet"
+      @close-editor="editing = !editing"
+    ></SnippetItemEditor>
   </div>
 </template>
 
 <script>
 import SnippetItemEditor from './SnippetItemEditor';
-import AccordeonTransition from './AccordeonTransition';
 
 export default {
   name: 'SnippetItem',
   props: ['snippet'],
   components: {
-    SnippetItemEditor,
-    AccordeonTransition
+    SnippetItemEditor
   },
   data() {
     return {
-      editing: false
+      editing: false,
+      isLoading: false
     };
   },
   methods: {
     deleteSnippet() {
+      this.$store.commit('loading', true);
       window.app.ui.confirm('Confirmation?').then(() => {
-        console.log('il a dit oui!');
-        this.$store.dispatch('deleteSnippet', this.snippet.id);
+        this.$store.dispatch('deleteSnippet', this.snippet.id)
+        .then(() => {
+          this.$store.commit('loading', false);  
+        });
       });
     }
   }

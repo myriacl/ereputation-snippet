@@ -1,45 +1,14 @@
-// Permet de générer un fake id unique
 function uuid() {
   return Math.random().toString(16).slice(2)
 }
 
-/* On sauvegarde la position des catégories via un tableau qui contient
-l'ordre de leurs id */
+
+// Categories //
+
 function saveCategoriesPosition(categories) {
   return new Promise(resolve => {
     //ajax goes here
     console.log('ajax call categories', categories.map(category => category.id));
-
-    /* Quand la promesse est résolue on retourne un objet de succès */
-    resolve({
-      success: true,
-      message: null
-    });
-  });
-}
-
-/* On sauvegarde la position des snippets */
-function saveSnippetsPosition(snippets) {
-  return new Promise(resolve => {
-    //ajax goes here
-    //console.log('ajax call snippets', snippets.map(snippet => [snippet.id, snippet.category_id, snippet.position]));
-    console.log('ajax call snippets', snippets.map(snippet => {
-      return { id: snippet.id, category_id: snippet.category_id, position: snippet.position }
-    }
-    ));
-
-    resolve({
-      success: true,
-      message: null
-    });
-  });
-}
-
-/* On sauvegarde le snippet mis à jour */
-function saveSnippet(snippetToSave) {
-  return new Promise(resolve => {
-    //ajax goes here
-    console.log('ajax call save snippet', { id: snippetToSave.id, title: snippetToSave.title, contents: snippetToSave.contents });
 
     resolve({
       success: true,
@@ -55,8 +24,6 @@ function addCategory(name) {
 
     resolve({
       success: true,
-      /* On retourne un objet category avec un id généré par
-      le serveur */
       message: { category: { id: uuid(), name } }
     });
   });
@@ -74,6 +41,49 @@ function updateCategory(category) {
   });
 }
 
+function deleteCategory(categoryId) {
+  return new Promise(resolve => {
+    //ajax goes here
+    console.log('ajax call delete category', categoryId);
+
+    resolve({
+      success: true,
+      message: null
+    });
+  });
+}
+
+
+// Snippets //
+
+function saveSnippetsPosition(snippets) {
+  return new Promise(resolve => {
+    //ajax goes here
+    console.log('ajax call snippets', snippets.map(snippet => {
+      return { id: snippet.id, category_id: snippet.category_id, position: snippet.position }
+    }
+    ));
+
+    resolve({
+      success: true,
+      message: null
+    });
+  });
+}
+
+function saveSnippet(snippetToSave) {
+  return new Promise(resolve => {
+    setTimeout(function () {
+      //ajax goes here
+      console.log('ajax call save snippet', { id: snippetToSave.id, title: snippetToSave.title, contents: snippetToSave.contents });
+      resolve({
+        success: true,
+        message: null
+      });
+    }, 3000);
+  });
+}
+
 function getEmptySnippet() {
   return new Promise(resolve => {
     //ajax goes here
@@ -81,8 +91,6 @@ function getEmptySnippet() {
 
     resolve({
       success: true,
-      /* On retourne un objet snippet vide avec un id généré par
-      le serveur */
       message: {
         snippet: {
           id: uuid(),
@@ -109,14 +117,25 @@ function getEmptySnippet() {
   });
 }
 
+function deleteSnippet(snippetId) {
+  return new Promise(resolve => {
+    setTimeout(function () {
+      //ajax goes here
+      console.log('ajax call delete snippet', snippetId);
+  
+      resolve({
+        success: true,
+        message: null
+      });
+    }, 3000);
+  });
+}
+
+
+// Datas //
 
 function load() {
-  /* On simule le retour d'un appel asynchrone qui renvoie une promesse
-  La promesse est résolue quand la fonction de callback
-  resolve passée en paramètre de la promesse est appelée avec sa valeur
-  en argument ici l'objet réponse. Quand la promesse est résolue
-  .then() est appelé avec comme argument la valeur de resolve()
-  ici l'objet reponse */
+
   return new Promise(resolve => {
 
     let response = {
@@ -262,7 +281,6 @@ function load() {
       }
     };
 
-    /* La promesse est résolue à cette endroit quand resolve est appelée */
     resolve(response)
   })
 }
@@ -271,9 +289,11 @@ function load() {
 export default {
   load,
   saveCategoriesPosition,
-  saveSnippetsPosition,
-  saveSnippet,
   addCategory,
   updateCategory,
-  getEmptySnippet
+  deleteCategory,
+  saveSnippetsPosition,
+  saveSnippet,
+  getEmptySnippet,
+  deleteSnippet
 }

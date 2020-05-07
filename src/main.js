@@ -10,45 +10,37 @@ import "./crm_stuff";
 
 import 'bootstrap';
 
-import "./assets/css/styles.scss"
-
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPen, faArrowsAltV, faBars, faPlus, faTrash} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-library.add(faPen, faArrowsAltV, faBars, faPlus, faTrash)
-Vue.component('font-awesome-icon', FontAwesomeIcon)
-
 Vue.use(Vuex)
+
+Vue.mixin({
+  methods:{
+      __(string){
+          return string;
+      }
+  }
+})
 
 Vue.config.productionTip = false
 
 let store = getStore()
 
-// Permet d'accéder à window dans les methods des components
-Vue.prototype.windowUtils = window.app
-
-
-/* INSTANCE DE VUE */
-
-// On instancie la vue racine
+// Instance de vue //
 new Vue({
   store,
-  // On appelle le composant principal ReputationSnippetEditor
   render: h => h(ReputationSnippetEditor),
-  // On le monte dan la div avec l'id css app qui se trouve dans index.html
 }).$mount('#app')
 
-/* On dispatch l'action load qui va se charger d'initialiser le store
-avec les données */
 store.dispatch('load');
 
-/* STORE */
+
+// Store //
 function getStore() {
 
   let state = {
     categories: [],
     snippets: [],
-    languages: []
+    languages: [],
+    isLoading: false
   };
 
   let mutations = {
@@ -62,7 +54,7 @@ function getStore() {
       state.languages = payload;
     },
     add_category(state, category) {
-      state.categories.push(category)
+      state.categories.unshift(category)
     },
     add_snippet(state, snippet) {
       state.snippets.push(snippet)
@@ -76,76 +68,27 @@ function getStore() {
       state.snippets.splice(state.snippets.findIndex(snippet => {
         return snippet.id === snippetId;
       }), 1);
-    }
+    },
+    loading(state, isLoading) {
+      console.log('isLoading', isLoading)
+      //isLoading ? state.isLoading = true : state.isLoading = false;
+      state.isLoading = isLoading;
+    }    
   };
 
   let actions = {
-    /* On récupère commit depuis l'objet context */
     load({ commit }) {
-      /* On simule l'appel à une requête asynchrone qui renvoie
-      une promesse.Quand la promesse est résolut on passe au then()
-      qui prend en paramètre une fonction de callback qui prend elle-même
-      en argument la valeur retournée par la promesse résolue, ici
-      l'objet response */
       return Backend.load().then(response => {
-        /* On commit les différentes parties du state à partir des
-        données de l'objet response via les mutations*/
         commit('categories', response.message.categories);
         commit('snippets', response.message.snippets);
         commit('languages', response.message.languages);
       });
     },
+
     updateCategoryOrder({ commit }, payload) {
-      /* On met à jour le state categories avec le nouveau tableau
-      ici de draggable */
-      commit('categories', payload);
-      /* On sauvegarde la position du nouveau tableau categories
-      sur le serveur via notre service Backend.
-      saveCategoriesPosition() renvoie une promesse */
       Backend.saveCategoriesPosition(payload).then(response => {
-        /* Si la réponse est un succès  */
         if (response.success) {
-          // On affiche une notification de succès
-          window.app.ui.success()
-        } else {
-          // Sinon on affiche l'erreur
-          window.app.ui.error(response.message)
-        }
-      });
-    },
-    /* On debounce le dispatch vers l'action updateSnippetsOrder
-    pour éviter un double appel quand on déplace un snippet
-    d'une catégorie à une autre */
-    debounceUpdateSnippetsOrder: debounce(({ dispatch }, snippetsUpdated) => {
-      dispatch('updateSnippetsOrder', snippetsUpdated);
-    }, 100),
-
-
-    updateSnippetsOrder({ state, commit }, snippetsUpdated) {
-      // On parcours le tableau des snippets du state
-      let payload = state.snippets.map(snippet => {
-        /* Pour chaque snippet on cherche grâce à son id
-        si il existe dans le tableau des snippets à mettre à jour,
-        un snippet avec le même id, si l existe on le retroune dans
-        snippetUpdated */
-        let snippetUpdated = snippetsUpdated.find(snipUp => snipUp.id === snippet.id);
-        // Si on trouve un snippet mis à jour
-        if (snippetUpdated) {
-          // On remplace le snippet du state par le nouveau mis à jour
-          snippet = snippetUpdated
-        }
-        // On retourne le snippet avec ou sans modification
-        return snippet
-      });
-      /* On commit le nouveau tableau des snippets grâce à la mutation
-      snippets */
-      commit('snippets', payload);
-
-      /* On sauvegarde la position du nouveau tableau
-      sur le serveur via le service Backend.
-      saveSnippetsPosition() renvoie une promesse */
-      Backend.saveSnippetsPosition(payload).then(response => {
-        if (response.success) {
+          commit('categories', payload);
           window.app.ui.success()
         } else {
           window.app.ui.error(response.message)
@@ -153,42 +96,9 @@ function getStore() {
       });
     },
 
-
-    /* Permet de mettre à jour ou créer un snippet */
-    saveSnippet({ state, commit }, { snippetToSave, create }) {
-      /* Si on est en mode creation on appelle la
-      mutation add_snippet qui va push le nouveau snippet dans
-      le tableau des snippets */
-      if (create) {
-        console.log('ok create snippet'); ///////////////////////////
-        commit('add_snippet', snippetToSave);
-        /* Sinon c'est que l'on est en mode update alors on
-        update le tabeau des snippets avec le nouveau snippet */
-      } else {
-        console.log('ok update snippet');
-        let payload = state.snippets.map(snippet => {
-          if (snippet.id === snippetToSave.id) {
-            snippet.title = snippetToSave.title;
-            snippet.contents = snippetToSave.contents;
-          }
-          return snippet
-        });
-        commit('snippets', payload);
-      }
-      /* On sauvegarde le nouveau snippet dans la bdd */
-      Backend.saveSnippet(snippetToSave).then(response => {
-        if (response.success) {
-          window.app.ui.success()
-        } else {
-          window.app.ui.error(response.message)
-        }
-      });
-    },
     addCategory({ commit }, name) {
       Backend.addCategory(name).then(response => {
         if (response.success) {
-          /* On commit ajoute l'objet category avec son id généré côté
-          serveur bdd dans le store */
           commit('add_category', response.message.category);
           window.app.ui.success()
         } else {
@@ -196,29 +106,101 @@ function getStore() {
         }
       });
     },
-    deleteSnippet({ commit }, snippetId) {
-      commit('delete_snippet', snippetId);
-    },
-    deleteCategory({ commit }, categoryId) {
-      commit('delete_category', categoryId);
-    },
-    updateCategory({ state, commit }, categoryUpdated) {
-      let payload = state.categories.map(category => {
-        if (category.id === categoryUpdated.id) {
-          category.name = categoryUpdated.name;
-        }
-        return category
-      });
-      commit('categories', payload);
 
-      Backend.updateCategory(categoryUpdated).then(response => {
+    deleteCategory({ commit }, categoryId) {
+      Backend.deleteCategory(categoryId).then(response => {
         if (response.success) {
+          commit('delete_category', categoryId);
           window.app.ui.success()
         } else {
           window.app.ui.error(response.message)
         }
       });
-    }
+    },
+
+    updateCategory({ state, commit }, categoryUpdated) {      
+      Backend.updateCategory(categoryUpdated).then(response => {
+        if (response.success) {
+          window.app.ui.success()
+          let payload = state.categories.map(category => {
+            if (category.id === categoryUpdated.id) {
+              category.name = categoryUpdated.name;
+            }
+            return category
+          });
+          commit('categories', payload);
+        } else {
+          window.app.ui.error(response.message)
+        }
+      });
+    },
+
+    /* On debounce cette action pour éviter un double appel quand 
+    on déplace un snippet d'une catégorie à une autre */
+    debounceUpdateSnippetsOrder: debounce(({ state, commit }, snippetsUpdated) => {
+      let payload = state.snippets.map(snippet => {
+        let snippetUpdated = snippetsUpdated.find(snipUp => snipUp.id === snippet.id);
+        if (snippetUpdated) {
+          snippet = snippetUpdated
+        }
+        return snippet
+      });
+      Backend.saveSnippetsPosition(payload).then(response => {
+        if (response.success) {
+          commit('snippets', payload);
+          window.app.ui.success()
+        } else {
+          window.app.ui.error(response.message)
+        }
+      });
+    }, 100),
+
+    async saveSnippet({ state, commit }, { snippetToSave, create}) {
+        return Backend.saveSnippet(snippetToSave).then(response => {
+          if (response.success) {
+            if (create) {
+              commit('add_snippet', snippetToSave);
+            } else {
+              let payload = state.snippets.map(snippet => {
+                if (snippet.id === snippetToSave.id) {
+                  snippet.title = snippetToSave.title;
+                  snippet.contents = snippetToSave.contents;
+                }
+                return snippet;
+              });
+              commit('snippets', payload);
+            }
+            window.app.ui.success()
+            return Promise.resolve()
+          } else {
+            window.app.ui.error(response.message)
+          }
+        });
+    },
+
+    async getEmptySnippet() {
+      return Backend.getEmptySnippet().then(response => {
+        if (response.success) {
+          window.app.ui.success()
+          return Promise.resolve(response)
+        } else {
+          window.app.ui.error(response.message);
+        }
+      });
+    },
+
+    async deleteSnippet({ commit }, snippetId) {
+      return Backend.deleteSnippet(snippetId).then(response => {
+        if (response.success) {
+          commit('delete_snippet', snippetId);
+          window.app.ui.success()
+          return Promise.resolve()
+        } else {
+          window.app.ui.error(response.message)
+        }
+      });
+    },
+
   };
 
   return new Vuex.Store({
