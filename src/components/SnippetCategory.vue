@@ -2,13 +2,13 @@
   <div class="box-xxl-less shadow-lg mb-0 snippet-category">
     <div class="header pb-2">
       <button class="btn btn-link" data-drag-category>
-        ↕ ico_fa-arrows-v
+        <font-awesome-icon icon="arrows-alt-v" />
       </button>
       <h6 class="pl-2 mb-0">
         <strong>{{ category.name }}</strong>
       </h6>
-      <button class="btn btn-link" @click="editName">
-        icoModif
+      <button class="btn btn-link p-2" @click="editName">
+        <font-awesome-icon icon="pen" />        
       </button>
       <div class=" ml-auto">
         <!-- Si le tableau des snippets est vide on affiche
@@ -42,7 +42,7 @@
       class="btn btn-link mt-2"
       @click="createSnippet"
     >
-      + Ajouter une réponse
+      <span class="plus">+</span> Ajouter une réponse
     </button>
 
     <!-- On injecte le composant SnippetItemEditor seulement

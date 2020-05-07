@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container rse">
     <div class="header mb-1">
       <h4 class="box-title">
         Catégorie
@@ -87,8 +87,10 @@ export default {
 };
 </script>
 
-<style scoped>
-.header {
-  display: flex;  
+<style scoped lang="scss">
+.rse {
+  .header {
+    display: flex;  
+  }
 }
 </style>

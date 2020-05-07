@@ -8,10 +8,14 @@ import { debounce } from 'lodash';
 
 import $ from 'jquery'
 import 'bootstrap';
-//import 'bootstrap/dist/css/bootstrap.min.css';
 
-//import './assets/css/app-vendors.css';
-//import './assets/css/app.css';
+import "./assets/css/styles.scss"
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPen, faArrowsAltV, faBars, faPlus, faTrash} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+library.add(faPen, faArrowsAltV, faBars, faPlus, faTrash)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.use(Vuex)
 
@@ -191,8 +195,8 @@ function getStore() {
       if (create) {
         console.log('ok create snippet'); ///////////////////////////
         commit('add_snippet', snippetToSave);
-      /* Sinon c'est que l'on est en mode update alors on
-      update le tabeau des snippets avec le nouveau snippet */
+        /* Sinon c'est que l'on est en mode update alors on
+        update le tabeau des snippets avec le nouveau snippet */
       } else {
         console.log('ok update snippet');
         let payload = state.snippets.map(snippet => {
@@ -203,7 +207,7 @@ function getStore() {
           return snippet
         });
         commit('snippets', payload);
-      }      
+      }
       /* On sauvegarde le nouveau snippet dans la bdd */
       Backend.saveSnippet(snippetToSave).then(response => {
         if (response.success) {

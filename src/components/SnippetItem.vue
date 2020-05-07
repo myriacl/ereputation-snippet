@@ -2,7 +2,7 @@
   <div class="snippet-item snippet-row mb-2 mt-2 pb-2">
     <div class="snippet-container">
       <div class="block-title">
-        <button class="btn btn-link mr-1" data-drag-snippet>☰</button>
+        <button class="btn btn-link mr-1" data-drag-snippet><font-awesome-icon icon="bars" /></button>
         <strong>{{ snippet.title }}</strong>
         <strong> / Position: {{ snippet.position }}</strong>
       </div>
@@ -10,7 +10,7 @@
       <div class="ml-auto btn-container">
         <div class="btn-group" v-show="!editing">
           <button class="btn btn-outline-danger" @click="deleteSnippet()">
-            icoSuppr
+            <font-awesome-icon icon="trash" />
           </button>
           <button class="btn btn-secondary" @click="editing = !editing">
             modifier
