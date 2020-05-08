@@ -14,17 +14,18 @@
             <i class="fas fa-trash"></i>
           </button>
           <button class="btn btn-secondary" @click="editing = !editing">
-            modifier
+            {{ __("modifier") }}
           </button>
         </div>
       </div>
     </div>
-
-    <SnippetItemEditor
-      v-if="editing"
-      :snippet="snippet"
-      @close-editor="editing = !editing"
-    ></SnippetItemEditor>
+    
+      <SnippetItemEditor
+        v-if="editing"
+        :snippet="snippet"
+        @close-editor="editing = !editing"
+      ></SnippetItemEditor>
+    
   </div>
 </template>
 
@@ -39,17 +40,16 @@ export default {
   },
   data() {
     return {
-      editing: false,
-      isLoading: false
+      editing: false
     };
   },
   methods: {
     deleteSnippet() {
-      this.$store.commit('loading', true);
-      window.app.ui.confirm('Confirmation?').then(() => {
+      this.$store.dispatch('loading', { event: 'delSnippet', isLoading: true });
+      window.app.ui.confirm(this.__('Voulez-vous vraiment supprimer ?')).then(() => {
         this.$store.dispatch('deleteSnippet', this.snippet.id)
         .then(() => {
-          this.$store.commit('loading', false);  
+          this.$store.dispatch('loading', { event: 'delSnippet', isLoading: false });
         });
       });
     }

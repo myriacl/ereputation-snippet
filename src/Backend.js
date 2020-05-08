@@ -19,37 +19,43 @@ function saveCategoriesPosition(categories) {
 
 function addCategory(name) {
   return new Promise(resolve => {
-    //ajax goes here
-    console.log('ajax call add category', { name });
+    setTimeout(function () {
+      //ajax goes here
+      console.log('ajax call add category', { name });
 
-    resolve({
-      success: true,
-      message: { category: { id: uuid(), name } }
-    });
+      resolve({
+        success: true,
+        message: { category: { id: uuid(), name } }
+      });     
+    }, 1000);
   });
 }
 
 function updateCategory(category) {
   return new Promise(resolve => {
-    //ajax goes here
-    console.log('ajax call update category', category);
+    setTimeout(function () {
+      //ajax goes here
+      console.log('ajax call update category', category);
 
-    resolve({
-      success: true,
-      message: null
-    });
+      resolve({
+        success: true,
+        message: null
+      });
+    }, 1000);
   });
 }
 
 function deleteCategory(categoryId) {
   return new Promise(resolve => {
-    //ajax goes here
-    console.log('ajax call delete category', categoryId);
+    setTimeout(function () {
+      //ajax goes here
+      console.log('ajax call delete category', categoryId);
 
-    resolve({
-      success: true,
-      message: null
-    });
+      resolve({
+        success: true,
+        message: null
+      });
+    }, 1000);
   });
 }
 
@@ -80,40 +86,42 @@ function saveSnippet(snippetToSave) {
         success: true,
         message: null
       });
-    }, 3000);
+    }, 1000);
   });
 }
 
 function getEmptySnippet() {
   return new Promise(resolve => {
-    //ajax goes here
-    console.log('ajax call get empty snippet');
+    setTimeout(function () {
+      //ajax goes here
+      console.log('ajax call get empty snippet');
 
-    resolve({
-      success: true,
-      message: {
-        snippet: {
-          id: uuid(),
-          title: '',
-          category_id: 0,
-          position: 1000,
-          contents: [
-            {
-              language_id: 1,
-              content: ""
-            },
-            {
-              language_id: 2,
-              content: ""
-            },
-            {
-              language_id: 3,
-              content: ""
-            }
-          ]
+      resolve({
+        success: true,
+        message: {
+          snippet: {
+            id: uuid(),
+            title: '',
+            category_id: 0,
+            position: 1000,
+            contents: [
+              {
+                language_id: 1,
+                content: ""
+              },
+              {
+                language_id: 2,
+                content: ""
+              },
+              {
+                language_id: 3,
+                content: ""
+              }
+            ]
+          }
         }
-      }
-    });
+      });
+    }, 1000);
   });
 }
 
@@ -127,7 +135,7 @@ function deleteSnippet(snippetId) {
         success: true,
         message: null
       });
-    }, 3000);
+    }, 1000);
   });
 }
 

@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import Backend from "./Backend";
-import ReputationSnippetEditor from "./components/ReputationSnippetEditor";
+import ReputationSnippetEditor from "./ReputationSnippetEditor/ReputationSnippetEditor";
+import Loader from './ReputationSnippetEditor/Loader'
 
 import { debounce } from 'lodash';
 
@@ -10,15 +11,19 @@ import "./crm_stuff";
 
 import 'bootstrap';
 
+
 Vue.use(Vuex)
 
+Vue.component('Loader', Loader)
+
 Vue.mixin({
-  methods:{
-      __(string){
-          return string;
-      }
+  methods: {
+    __(string) {
+      return string;
+    }
   }
 })
+
 
 Vue.config.productionTip = false
 
@@ -40,7 +45,16 @@ function getStore() {
     categories: [],
     snippets: [],
     languages: [],
-    isLoading: false
+    isLoading: false,
+    loading: {
+      saveSnippet: false,
+      delSnippet: false,
+      addCategory: false,
+      delCategory: false,
+      updateCategory: false,
+      createSnippet:false,
+      el: null
+    }
   };
 
   let mutations = {
@@ -69,15 +83,14 @@ function getStore() {
         return snippet.id === snippetId;
       }), 1);
     },
-    loading(state, isLoading) {
-      console.log('isLoading', isLoading)
-      //isLoading ? state.isLoading = true : state.isLoading = false;
-      state.isLoading = isLoading;
-    }    
+    loading(state, { event, isLoading, el }) {
+      state.loading[event] = isLoading;
+      state.loading['el'] = (el) ? el : null
+    }
   };
 
   let actions = {
-    load({ commit }) {
+    async load({ commit }) {
       return Backend.load().then(response => {
         commit('categories', response.message.categories);
         commit('snippets', response.message.snippets);
@@ -85,43 +98,45 @@ function getStore() {
       });
     },
 
-    updateCategoryOrder({ commit }, payload) {
-      Backend.saveCategoriesPosition(payload).then(response => {
+    async updateCategoryOrder({ commit }, payload) {
+      return Backend.saveCategoriesPosition(payload).then(response => {
         if (response.success) {
           commit('categories', payload);
           window.app.ui.success()
+          return Promise.resolve()
         } else {
           window.app.ui.error(response.message)
         }
       });
     },
 
-    addCategory({ commit }, name) {
-      Backend.addCategory(name).then(response => {
+    async addCategory({ commit }, name) {
+      return Backend.addCategory(name).then(response => {
         if (response.success) {
           commit('add_category', response.message.category);
           window.app.ui.success()
+          return Promise.resolve()
         } else {
           window.app.ui.error(response.message)
         }
       });
     },
 
-    deleteCategory({ commit }, categoryId) {
-      Backend.deleteCategory(categoryId).then(response => {
+    async deleteCategory({ commit }, categoryId) {
+      return Backend.deleteCategory(categoryId).then(response => {
         if (response.success) {
           commit('delete_category', categoryId);
           window.app.ui.success()
+          return Promise.resolve()
         } else {
           window.app.ui.error(response.message)
         }
       });
     },
 
-    updateCategory({ state, commit }, categoryUpdated) {      
-      Backend.updateCategory(categoryUpdated).then(response => {
+    async updateCategory({ state, commit }, categoryUpdated) {
+      return Backend.updateCategory(categoryUpdated).then(response => {
         if (response.success) {
-          window.app.ui.success()
           let payload = state.categories.map(category => {
             if (category.id === categoryUpdated.id) {
               category.name = categoryUpdated.name;
@@ -129,6 +144,8 @@ function getStore() {
             return category
           });
           commit('categories', payload);
+          window.app.ui.success()
+          return Promise.resolve()
         } else {
           window.app.ui.error(response.message)
         }
@@ -155,27 +172,27 @@ function getStore() {
       });
     }, 100),
 
-    async saveSnippet({ state, commit }, { snippetToSave, create}) {
-        return Backend.saveSnippet(snippetToSave).then(response => {
-          if (response.success) {
-            if (create) {
-              commit('add_snippet', snippetToSave);
-            } else {
-              let payload = state.snippets.map(snippet => {
-                if (snippet.id === snippetToSave.id) {
-                  snippet.title = snippetToSave.title;
-                  snippet.contents = snippetToSave.contents;
-                }
-                return snippet;
-              });
-              commit('snippets', payload);
-            }
-            window.app.ui.success()
-            return Promise.resolve()
+    async saveSnippet({ state, commit }, { snippetToSave, create }) {
+      return Backend.saveSnippet(snippetToSave).then(response => {
+        if (response.success) {
+          if (create) {
+            commit('add_snippet', snippetToSave);
           } else {
-            window.app.ui.error(response.message)
+            let payload = state.snippets.map(snippet => {
+              if (snippet.id === snippetToSave.id) {
+                snippet.title = snippetToSave.title;
+                snippet.contents = snippetToSave.contents;
+              }
+              return snippet;
+            });
+            commit('snippets', payload);
           }
-        });
+          window.app.ui.success()
+          return Promise.resolve()
+        } else {
+          window.app.ui.error(response.message)
+        }
+      });
     },
 
     async getEmptySnippet() {
@@ -199,6 +216,10 @@ function getStore() {
           window.app.ui.error(response.message)
         }
       });
+    },
+
+    loading({ commit }, payload) {
+      commit('loading', payload);
     },
 
   };

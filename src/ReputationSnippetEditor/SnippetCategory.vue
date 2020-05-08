@@ -7,7 +7,7 @@
       <h6 class="pl-2 mb-0">
         <strong>{{ __(category.name) }}</strong>
       </h6>
-      <button class="btn btn-link p-2" @click="editName">
+      <button class="btn btn-link p-2" @click="updateCategory">
         <i class="fas fa-pen"></i>
       </button>
       <div class=" ml-auto">
@@ -16,7 +16,7 @@
           v-if="!snippets.length"
           @click="deleteCategory"
         >
-          Supprimer
+          {{ __("Supprimer") }}
         </button>
       </div>
     </div>
@@ -39,7 +39,7 @@
       class="btn btn-link mt-2"
       @click="createSnippet"
     >
-      + Ajouter une réponse
+      {{ __("+ Ajouter une réponse") }}
     </button>
 
     <SnippetItemEditor
@@ -77,6 +77,7 @@ export default {
   computed: {
     snippets: {
       get() {
+        console.log(this._uid);
         return this.$store.state.snippets
           .filter(snippet => {
             return snippet.category_id === this.category.id;
@@ -99,39 +100,48 @@ export default {
         handle: '[data-drag-snippet]',
         forceFallback: true // Key to make autoScroll works
       };
-    },
-    inter() {
-      return window.__
     }
   },
   methods: {
-    editName() {
+    updateCategory() {
       window.app.ui
         .prompt('Modifier le nom de la catégorie', this.category.name)
         .then(response => {
           if (response) {
+            this.$store.dispatch('loading', { event: 'updateCategory', isLoading: true });
             this.$store.dispatch('updateCategory', {
               id: this.category.id,
               name: response
+            })
+            .then(() => {
+              this.$store.dispatch('loading', { event: 'updateCategory', isLoading: false });
             });
           }
         });
     },
     deleteCategory() {
-      window.app.ui.confirm('Confirmation?').then(() => {
-        this.$store.dispatch('deleteCategory', this.category.id);
+      window.app.ui.confirm(this.__('Voulez-vous vraiment supprimer ?')).then(() => {
+        this.$store.dispatch('loading', { event: 'delCategory', isLoading: true });
+        this.$store.dispatch('deleteCategory', this.category.id)
+        .then(() => {
+          this.$store.dispatch('loading', { event: 'delCategory', isLoading: false });
+        });
       });
     },
     createSnippet() {
+      this.$store.dispatch('loading', { event: 'createSnippet', isLoading: true });
       this.$store.dispatch('getEmptySnippet').then(response => { 
-          let emptySnippet = response.message.snippet;
+        let emptySnippet = response.message.snippet;
 
           emptySnippet.category_id = this.category.id;
 
           emptySnippet.position = this.snippets.length + 1;
           this.emptySnippet = emptySnippet;
-
           this.editing = true;
+          
+      })
+      .then(() => {
+        this.$store.dispatch('loading', { event: 'createSnippet', isLoading: false });
       });
     },
     closeEditor() {

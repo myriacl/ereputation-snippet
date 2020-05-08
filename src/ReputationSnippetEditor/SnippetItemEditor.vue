@@ -1,7 +1,8 @@
 <template>
-  <div class="box-fieldset" :class="{'frame-loading': isLoading }">
+<Loader :loading="loading">
+  <div class="box-fieldset">
     <div class="form-group">
-      <span>Nom</span><br />
+      <span>{{ __("Nom") }}</span><br />
       <input type="text" class="form-control" v-model="title" />
     </div>
     <div class="tab-body ">
@@ -58,17 +59,14 @@
 
     <div class="text-right">
       <button class="btn btn-secondary ml-2" @click="saveSnippet">
-        Enregistrer
+        {{ __("Enregistrer") }}
       </button>
       <button class="btn btn-outline-secondary ml-2" @click="cancel">
-        Annuler
+        {{ __("Annuler") }}
       </button>
     </div>
-
-    <!-- <strong>Snippet:</strong> {{ snippet }} <br />
-    <strong>contents_hash:</strong> {{ contents_hash }}<br />
-    {{ create }} -->
   </div>
+  </Loader>
 </template>
 
 <script>
@@ -81,12 +79,19 @@ export default {
     return {
       contents_hash: this.freshContentsHash(this.snippet),
       current_language_id: 1,
-      title: this.snippet.title,
-      isLoading: false
+      title: this.snippet.title
     };
   },
   computed: {
-    ...mapState(['languages'])
+    ...mapState(['languages']),
+    loading() {
+      console.log('snippet', this._uid);
+      return this.$store.state.loading.saveSnippet
+      /* Si l'on souhaite isoler le loading sur l'instance du 
+      composant qui appelle le loading */
+      // let loading = this.$store.state.loading.saveSnippet     
+      // return loading.saveSnippet  && loading.el === this.uid
+    } 
   },
   methods: {
     freshContentsHash(snippet) {
@@ -101,8 +106,11 @@ export default {
       });
       return contents_hash;
     },
-    saveSnippet() {
-      this.isLoading = true;
+    saveSnippet() {      
+      this.$store.dispatch('loading', { event: 'saveSnippet', isLoading: true });
+      /* Si l'on souhaite isoler le loading sur l'instance du composant
+      qui appelle le loading */
+      //this.$store.dispatch('loading', { event: 'saveSnippet', isLoading: true, el: this.uid });
       let contents = [];
       for (let language_id in this.contents_hash) {
         contents.push({
@@ -131,7 +139,7 @@ export default {
         create: this.create
       })
       .then(() => {
-        this.isLoading = false;
+        this.$store.dispatch('loading', { event: 'saveSnippet', isLoading: false });
         this.$emit('close-editor');
       });
       

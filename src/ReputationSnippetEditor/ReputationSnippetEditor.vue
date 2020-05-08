@@ -1,14 +1,14 @@
 <template>
-  <div class="container rse">
+  <div class="container reputation-snippet-editor">
     <div class="header mb-1">
       <h4 class="box-title">
-        Catégorie
+        {{ __("Catégorie") }}
       </h4>
       <button @click="addCategory" class="btn btn-link">
-        + Ajouter une catégorie
+        {{ __("+ Ajouter une catégorie") }}
       </button>
     </div>
-    <div :class="{'frame-loading': isLoading }">
+    <Loader :loading="loading">
       <draggable v-model="categories" v-bind="dragOptions">
         <SnippetCategory
           v-for="category in categories"
@@ -17,7 +17,7 @@
         >
         </SnippetCategory>
       </draggable>
-    </div>
+    </Loader>
   </div>
 </template>
 
@@ -41,10 +41,15 @@ export default {
         this.$store.dispatch('updateCategoryOrder', value);
       }
     },
-    isLoading: {
-      get() {
-        return this.$store.state.isLoading;
-      }
+    loading() {
+      let loading = this.$store.state.loading;
+      return (
+        loading.delSnippet ||
+        loading.addCategory ||
+        loading.delCategory ||
+        loading.updateCategory ||
+        loading.createSnippet
+      );
     },
     dragOptions() {
       return {
@@ -56,20 +61,27 @@ export default {
   },
   methods: {
     addCategory() {
-      window.app.ui
-        .prompt('Ajouter une nouvelle catégorie')
-        .then(response => {
-          if (response) {
-            this.$store.dispatch('addCategory', response);
-          }
+      window.app.ui.prompt(this.__('Ajouter une nouvelle catégorie')).then(response => {
+        this.$store.dispatch('loading', {
+          event: 'addCategory',
+          isLoading: true
         });
+        if (response) {
+          this.$store.dispatch('addCategory', response).then(() => {
+            this.$store.dispatch('loading', {
+              event: 'addCategory',
+              isLoading: false
+            });
+          });
+        }
+      });
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-.rse {
+.reputation-snippet-editor {
   .header {
     display: flex;
   }
