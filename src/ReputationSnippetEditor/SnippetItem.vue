@@ -14,18 +14,17 @@
             <i class="fas fa-trash"></i>
           </button>
           <button class="btn btn-secondary" @click="editing = !editing">
-            {{ __("modifier") }}
+            {{ __('modifier') }}
           </button>
         </div>
       </div>
     </div>
-    
-      <SnippetItemEditor
-        v-if="editing"
-        :snippet="snippet"
-        @close-editor="editing = !editing"
-      ></SnippetItemEditor>
-    
+
+    <SnippetItemEditor
+      v-if="editing"
+      :snippet="snippet"
+      @close-editor="editing = !editing"
+    ></SnippetItemEditor>
   </div>
 </template>
 
@@ -46,37 +45,44 @@ export default {
   methods: {
     deleteSnippet() {
       this.$store.dispatch('loading', { event: 'delSnippet', isLoading: true });
-      window.app.ui.confirm(this.__('Voulez-vous vraiment supprimer ?')).then(() => {
-        this.$store.dispatch('deleteSnippet', this.snippet.id)
+      window.app.ui
+        .confirm(this.__('Voulez-vous vraiment supprimer ?'))
         .then(() => {
-          this.$store.dispatch('loading', { event: 'delSnippet', isLoading: false });
+          this.$store.dispatch('deleteSnippet', this.snippet.id).then(() => {
+            this.$store.dispatch('loading', {
+              event: 'delSnippet',
+              isLoading: false
+            });
+          });
         });
-      });
     }
   }
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 .snippet-item {
   border-bottom: 1px solid #dee2e6;
-}
-.snippet-item .snippet-container {
-  display: flex;
-  align-items: center;
-}
 
-@media (max-width: 767px) {
-  .snippet-item .snippet-container {
-    display: initial;
-  }
-  .snippet-item .btn-container {
-    text-align: right;
-    padding-top: 0.5rem;
-  }
-  .snippet-item .block-title {
+  .snippet-container {
     display: flex;
     align-items: center;
+
+    @media (max-width: 767px) {
+      display: initial;
+    }
+  }
+  .block-title {
+    @media (max-width: 767px) {
+      display: flex;
+      align-items: center;
+    }
+  }
+  .btn-container {
+    @media (max-width: 767px) {
+      text-align: right;
+      padding-top: 0.5rem;
+    }
   }
 }
 </style>

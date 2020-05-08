@@ -85,7 +85,6 @@ export default {
   computed: {
     ...mapState(['languages']),
     loading() {
-      console.log('snippet', this._uid);
       return this.$store.state.loading.saveSnippet
       /* Si l'on souhaite isoler le loading sur l'instance du 
       composant qui appelle le loading */

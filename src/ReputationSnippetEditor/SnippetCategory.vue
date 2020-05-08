@@ -77,7 +77,6 @@ export default {
   computed: {
     snippets: {
       get() {
-        console.log(this._uid);
         return this.$store.state.snippets
           .filter(snippet => {
             return snippet.category_id === this.category.id;
@@ -151,14 +150,15 @@ export default {
 };
 </script>
 
-<style scoped>
-.snippet-category .header {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.snippet-category .drop-category {
-  min-height: 40px;
+<style scoped lang="scss">
+.snippet-category {
+  .header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .drop-category {
+    min-height: 40px;
+  }
 }
 </style>
