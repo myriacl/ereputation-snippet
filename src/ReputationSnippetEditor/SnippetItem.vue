@@ -9,16 +9,23 @@
       </div>
 
       <div class="ml-auto btn-container">
+        <!-- On affiche les boutons seulement quand on est pas en mode édition -->
         <div class="btn-group" v-show="!editing">
           <button class="btn btn-outline-danger" @click="deleteSnippet()">
             <i class="fas fa-trash"></i>
           </button>
-          <button class="btn btn-secondary" @click="editing = !editing">{{ __('modifier') }}</button>
+          <button class="btn btn-secondary" @click="editing = !editing">
+            {{ __('modifier') }}
+          </button>
         </div>
       </div>
     </div>
-
-    <SnippetItemEditor v-if="editing" :snippet="snippet" @close-editor="editing = !editing"></SnippetItemEditor>
+    <!-- On passe le snippet courant à l'éditeur pour le pré-remplir -->
+    <SnippetItemEditor
+      v-if="editing"
+      :snippet="snippet"
+      @close-editor="editing = !editing"
+    ></SnippetItemEditor>
   </div>
 </template>
 
