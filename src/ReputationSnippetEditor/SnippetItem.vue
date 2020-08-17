@@ -13,18 +13,12 @@
           <button class="btn btn-outline-danger" @click="deleteSnippet()">
             <i class="fas fa-trash"></i>
           </button>
-          <button class="btn btn-secondary" @click="editing = !editing">
-            {{ __('modifier') }}
-          </button>
+          <button class="btn btn-secondary" @click="editing = !editing">{{ __('modifier') }}</button>
         </div>
       </div>
     </div>
 
-    <SnippetItemEditor
-      v-if="editing"
-      :snippet="snippet"
-      @close-editor="editing = !editing"
-    ></SnippetItemEditor>
+    <SnippetItemEditor v-if="editing" :snippet="snippet" @close-editor="editing = !editing"></SnippetItemEditor>
   </div>
 </template>
 
@@ -44,10 +38,13 @@ export default {
   },
   methods: {
     deleteSnippet() {
-      this.$store.dispatch('loading', { event: 'delSnippet', isLoading: true });
       window.app.ui
         .confirm(this.__('Voulez-vous vraiment supprimer ?'))
         .then(() => {
+          this.$store.dispatch('loading', {
+            event: 'delSnippet',
+            isLoading: true
+          });
           this.$store.dispatch('deleteSnippet', this.snippet.id).then(() => {
             this.$store.dispatch('loading', {
               event: 'delSnippet',
