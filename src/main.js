@@ -5,6 +5,8 @@ import Backend from './Backend';
 import ReputationSnippetEditor from './ReputationSnippetEditor/ReputationSnippetEditor';
 import Loader from './ReputationSnippetEditor/Loader';
 
+import './assets/styles/app.css';
+
 import { debounce } from 'lodash';
 
 import './crm_stuff';

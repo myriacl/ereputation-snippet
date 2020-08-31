@@ -1,14 +1,18 @@
 function uuid() {
-  return Math.random().toString(16).slice(2)
+  return Math.random()
+    .toString(16)
+    .slice(2);
 }
-
 
 // Categories //
 
 function saveCategoriesPosition(categories) {
   return new Promise(resolve => {
     //ajax goes here
-    console.log('ajax call categories', categories.map(category => category.id));
+    console.log(
+      'ajax call categories',
+      categories.map(category => category.id)
+    );
 
     resolve({
       success: true,
@@ -19,21 +23,21 @@ function saveCategoriesPosition(categories) {
 
 function addCategory(name) {
   return new Promise(resolve => {
-    setTimeout(function () {
+    setTimeout(function() {
       //ajax goes here
       console.log('ajax call add category', { name });
 
       resolve({
         success: true,
         message: { category: { id: uuid(), name } }
-      });     
+      });
     }, 1000);
   });
 }
 
 function updateCategory(category) {
   return new Promise(resolve => {
-    setTimeout(function () {
+    setTimeout(function() {
       //ajax goes here
       console.log('ajax call update category', category);
 
@@ -47,7 +51,7 @@ function updateCategory(category) {
 
 function deleteCategory(categoryId) {
   return new Promise(resolve => {
-    setTimeout(function () {
+    setTimeout(function() {
       //ajax goes here
       console.log('ajax call delete category', categoryId);
 
@@ -59,16 +63,21 @@ function deleteCategory(categoryId) {
   });
 }
 
-
 // Snippets //
 
 function saveSnippetsPosition(snippets) {
   return new Promise(resolve => {
     //ajax goes here
-    console.log('ajax call snippets', snippets.map(snippet => {
-      return { id: snippet.id, category_id: snippet.category_id, position: snippet.position }
-    }
-    ));
+    console.log(
+      'ajax call snippets',
+      snippets.map(snippet => {
+        return {
+          id: snippet.id,
+          category_id: snippet.category_id,
+          position: snippet.position
+        };
+      })
+    );
 
     resolve({
       success: true,
@@ -79,9 +88,13 @@ function saveSnippetsPosition(snippets) {
 
 function saveSnippet(snippetToSave) {
   return new Promise(resolve => {
-    setTimeout(function () {
+    setTimeout(function() {
       //ajax goes here
-      console.log('ajax call save snippet', { id: snippetToSave.id, title: snippetToSave.title, contents: snippetToSave.contents });
+      console.log('ajax call save snippet', {
+        id: snippetToSave.id,
+        title: snippetToSave.title,
+        contents: snippetToSave.contents
+      });
       resolve({
         success: true,
         message: null
@@ -92,7 +105,7 @@ function saveSnippet(snippetToSave) {
 
 function getEmptySnippet() {
   return new Promise(resolve => {
-    setTimeout(function () {
+    setTimeout(function() {
       //ajax goes here
       console.log('ajax call get empty snippet');
 
@@ -107,15 +120,15 @@ function getEmptySnippet() {
             contents: [
               {
                 language_id: 1,
-                content: ""
+                content: ''
               },
               {
                 language_id: 2,
-                content: ""
+                content: ''
               },
               {
                 language_id: 3,
-                content: ""
+                content: ''
               }
             ]
           }
@@ -127,10 +140,10 @@ function getEmptySnippet() {
 
 function deleteSnippet(snippetId) {
   return new Promise(resolve => {
-    setTimeout(function () {
+    setTimeout(function() {
       //ajax goes here
       console.log('ajax call delete snippet', snippetId);
-  
+
       resolve({
         success: true,
         message: null
@@ -139,17 +152,13 @@ function deleteSnippet(snippetId) {
   });
 }
 
-
 // Datas //
 
 function load() {
-
   return new Promise(resolve => {
-
     let response = {
       success: true,
       message: {
-
         languages: [
           {
             id: 1,
@@ -172,116 +181,120 @@ function load() {
         categories: [
           {
             id: 1,
-            name: 'Client fâchés',
+            name: 'Catégorie 1'
           },
           {
             id: 2,
-            name: 'Client content',
+            name: 'Catégorie 2'
           },
           {
             id: 3,
-            name: 'Client très content',
-          },
+            name: 'Catégorie 3'
+          }
         ],
 
         snippets: [
           {
             id: 1,
-            title: 'A cause du bruit',
+            title: 'Snippet 1',
             category_id: 1,
             position: 1,
             contents: [
               {
                 language_id: 1,
-                content: "Lorem ipsum en francais"
+                content: 'Lorem ipsum en francais'
               },
               {
                 language_id: 2,
-                content: "Lorem ipsum en anglais"
+                content: 'Lorem ipsum en anglais'
               },
               {
                 language_id: 3,
-                content: "Lorem ipsum en allemand"
+                content: 'Lorem ipsum en allemand'
               }
             ]
           },
           {
             id: 2,
-            title: 'A cause du staff',
+            title: 'Snippet 2',
             category_id: 1,
             position: 2,
             contents: [
               {
                 language_id: 1,
-                content: "Toute notre équipe vous présente ses plus plates excuses"
+                content: 'Lorem ipsum en francais'
               },
               {
                 language_id: 2,
-                content: "All the team is truly sorry and is being whipped right now"
+                content: 'Lorem ipsum en anglais'
               },
               {
                 language_id: 3,
-                content: "Lorem ipsum en allemand"
+                content: 'Lorem ipsum en allemand'
               }
             ]
           },
           {
             id: 3,
-            title: 'Remercie le staff',
+            title: 'Snippet 3',
             category_id: 2,
             position: 1,
             contents: [
               {
                 language_id: 1,
-                content: "Merci mreci mreci"
+                content: 'Lorem ipsum en francais'
               },
               {
                 language_id: 2,
-                content: "thanks thanks thanks"
+                content: 'Lorem ipsum en anglais'
               },
               {
                 language_id: 3,
-                content: "Lorem ipsum en allemand"
+                content: 'Lorem ipsum en allemand'
               }
             ]
           },
           {
             id: 4,
-            title: 'Remercie le staff 2',
+            title: 'Snippet 4',
             category_id: 2,
             position: 2,
             contents: [
               {
                 language_id: 1,
-                content: "Merci mreci mreci"
+                content: 'Lorem ipsum en francais'
               },
               {
                 language_id: 2,
-                content: "thanks thanks thanks"
+                content: 'Lorem ipsum en anglais'
               },
               {
                 language_id: 3,
-                content: "Lorem ipsum en allemand"
+                content: 'Lorem ipsum en allemand'
+              },
+              {
+                language_id: 4,
+                content: 'Lorem ipsum en breton'
               }
             ]
           },
           {
             id: 5,
-            title: 'Excellent',
+            title: 'Snippet 5',
             category_id: 3,
             position: 1,
             contents: [
               {
                 language_id: 1,
-                content: "Lorem ipsum en francais"
+                content: 'Lorem ipsum en francais'
               },
               {
                 language_id: 2,
-                content: "Lorem ipsum en anglais"
+                content: 'Lorem ipsum en anglais'
               },
               {
                 language_id: 3,
-                content: "Lorem ipsum en allemand"
+                content: 'Lorem ipsum en allemand'
               }
             ]
           }
@@ -289,10 +302,9 @@ function load() {
       }
     };
 
-    resolve(response)
-  })
+    resolve(response);
+  });
 }
-
 
 export default {
   load,
@@ -304,4 +316,4 @@ export default {
   saveSnippet,
   getEmptySnippet,
   deleteSnippet
-}
+};
